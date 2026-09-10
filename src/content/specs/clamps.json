@@ -1,0 +1,9 @@
+[
+  {
+    "id": "clamps",
+    "types": ["PVC pipe clamps", "uPVC pipe clamps", "SWR pipe clamps", "Apartment/pipe clamps"],
+    "buyerType": "wholesale-only",
+    "shipsOutsideDistrict": true,
+    "knownDestinations": ["Bangalore"]
+  }
+]

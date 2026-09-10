@@ -1,0 +1,60 @@
+---
+import type { ImageMetadata } from "astro";
+import RevealImage from "../ui/RevealImage.astro";
+
+interface Image {
+  src: ImageMetadata;
+  alt: string;
+}
+
+interface Props {
+  images: Image[];
+}
+
+const { images } = Astro.props as Props;
+// Duplicated so the track can loop seamlessly: when the first copy has
+// scrolled fully out of view, the second copy is in the exact position
+// the first started in.
+const loopImages = [...images, ...images];
+---
+
+<div class="work-strip -mx-4 overflow-hidden md:-mx-11 lg:-mx-20">
+  <div class="work-strip-track flex w-max items-start gap-4 px-4 md:px-11 lg:px-20">
+    {
+      loopImages.map((image, i) => (
+        <RevealImage
+          src={image.src}
+          alt={image.alt}
+          class:list={[
+            "w-56 shrink-0 sm:w-72",
+            i % 2 === 0 ? "aspect-square" : "aspect-[4/3]",
+          ]}
+          widths={[224, 288, 576]}
+          sizes="(min-width: 640px) 288px, 224px"
+        />
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .work-strip-track {
+    animation: work-strip-scroll 30s linear infinite;
+  }
+  .work-strip:hover .work-strip-track {
+    animation-play-state: paused;
+  }
+  @keyframes work-strip-scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .work-strip-track {
+      animation: none;
+    }
+  }
+</style>

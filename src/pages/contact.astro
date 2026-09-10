@@ -1,0 +1,34 @@
+---
+import { getEntry } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import OwnerSlot from "../components/ui/OwnerSlot.astro";
+import MapEmbed from "../components/ui/MapEmbed.astro";
+import TelLink from "../components/ui/TelLink.astro";
+import WhatsAppButton from "../components/ui/WhatsAppButton.astro";
+import ReviewBadge from "../components/ui/ReviewBadge.astro";
+
+const business = await getEntry("business", "business");
+const { founder, foundedYear, phone, closingTime, googleRating, googleReviewCount } = business!.data;
+---
+
+<BaseLayout title="Contact" description="Contact Sun Industries: phone, WhatsApp, and address.">
+  <section class="px-4 md:px-11 lg:px-20 py-12">
+    <h1 class="mb-2 text-3xl font-bold text-ink">Contact us</h1>
+    <p class="mb-8 max-w-prose text-muted">
+      Founded in {foundedYear} by {founder}.
+    </p>
+
+    <div class="mb-10 grid gap-6 sm:grid-cols-2">
+      <div class="flex flex-col gap-3">
+        <TelLink phone={phone} label={`Call ${phone}`} class="text-lg font-semibold text-ink hover:text-sun-text" />
+        <WhatsAppButton phone={phone} message="Hi, I'd like to get in touch with Sun Industries." class="w-fit" />
+        <OwnerSlot label="Address" />
+        <OwnerSlot label="Email" />
+        <OwnerSlot label="Working hours" />
+        <p class="text-sm text-muted">Open until {closingTime}</p>
+        <ReviewBadge rating={googleRating} reviewCount={googleReviewCount} />
+      </div>
+      <MapEmbed />
+    </div>
+  </section>
+</BaseLayout>

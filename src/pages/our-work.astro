@@ -1,0 +1,15 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import GalleryGrid from "../components/sections/GalleryGrid.astro";
+---
+
+<BaseLayout title="Our Work" description="Photos of work completed by Sun Industries.">
+  <section class="px-4 md:px-11 lg:px-20 py-12">
+    <h1 class="mb-2 text-3xl font-bold text-ink">Our work</h1>
+    <p class="mb-8 max-w-prose text-muted">
+      A look at completed uPVC, steel, clamp, and laser-cutting work.
+    </p>
+    <GalleryGrid />
+  </section>
+
+</BaseLayout>

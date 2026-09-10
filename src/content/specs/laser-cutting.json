@@ -1,0 +1,13 @@
+[
+  {
+    "id": "laser-cutting",
+    "materialsCut": null,
+    "thicknessRange": null,
+    "maxSheetSize": null,
+    "machineAndWattage": null,
+    "tolerance": null,
+    "drawingFormats": ["DXF", "DWG", "PDF"],
+    "turnaround": null,
+    "minimumOrder": null
+  }
+]

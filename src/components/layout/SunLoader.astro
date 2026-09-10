@@ -1,0 +1,361 @@
+---
+---
+
+<div id="sun-loader" role="presentation" aria-hidden="true"><div id="sun-stage"></div></div>
+
+<style is:global>
+  #sun-loader {
+    --ground: #f4f2ed;
+    --ink: #16181c;
+    --sun: #d9a21b;
+    position: fixed;
+    inset: 0;
+    background: var(--ground);
+    overflow: hidden;
+    z-index: 9999;
+  }
+  #sun-stage {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 1920px;
+    height: 1080px;
+    transform-origin: 50% 50%;
+  }
+  .sl-abs { position: absolute; }
+  .sl-word {
+    left: 0; top: 472px; width: 1920px; display: flex; justify-content: center;
+    align-items: flex-end; font-family: Archivo, "Helvetica Neue", Helvetica, sans-serif;
+    font-weight: 500; font-size: 94px; line-height: 1;
+  }
+  .sl-cell { overflow: hidden; height: 148px; display: flex; align-items: center; }
+  .sl-glyph {
+    position: relative; letter-spacing: .3em; padding-left: .3em;
+    background-image: linear-gradient(178deg, #0C0E12 0%, #2C313A 46%, #14161A 74%, #05060A 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .sl-glare {
+    position: absolute; left: 0; top: 0; letter-spacing: .3em; padding-left: .3em;
+    background-image: linear-gradient(104deg, #B9821A 0%, #E8B93F 34%, #FBF0C6 50%, #E8B93F 66%, #B9821A 100%);
+    background-size: 260% 100%; -webkit-background-clip: text; background-clip: text;
+    color: transparent; opacity: 0;
+  }
+  .sl-mask { left: 0; top: 0; width: 1920px; height: 720px; overflow: hidden; }
+  .sl-disc { position: absolute; width: 472px; height: 472px; left: 724px; border-radius: 50%; overflow: hidden; }
+  .sl-bar { position: absolute; left: 0; width: 100%; background: var(--sun); transform-origin: 50% 50%; }
+  .sl-ring {
+    position: absolute; width: 540px; height: 540px; left: 690px; border-radius: 50%;
+    border: 1px solid var(--ink);
+  }
+  .sl-rule { left: 200px; width: 1520px; background: var(--ink); transform-origin: 50% 50%; }
+  .sl-tick { width: 2px; height: 52px; background: var(--sun); left: 959px; top: 694px; }
+  .sl-dawn {
+    left: 660px; top: 716px; width: 600px; height: 5px; filter: blur(3px);
+    background: linear-gradient(90deg, transparent, var(--sun), transparent);
+  }
+  .sl-label {
+    left: 200px; top: 816px; font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 22px; letter-spacing: .42em; color: var(--ink); white-space: pre;
+  }
+  .sl-track { left: 200px; top: 858px; width: 1520px; height: 2px; background: var(--ink); opacity: .12; }
+  .sl-thumb { left: 200px; top: 858px; width: 240px; height: 2px; background: var(--sun); }
+
+  @media (max-width: 600px) {
+    .sl-label, .sl-track, .sl-thumb { display: none; }
+  }
+</style>
+
+<script>
+  (function (global: Window & typeof globalThis) {
+    var WORD = "SUN INDUSTRIES",
+      R = 236,
+      HORIZON = 720,
+      W = 1920,
+      H = 1080;
+    var INTRO = 4.4,
+      EXIT = 0.8,
+      CYCLE = 1.6,
+      MIN_VISIBLE = 2.4;
+
+    var easeOutCubic = function (t: number) {
+      return 1 - Math.pow(1 - t, 3);
+    };
+    var easeOutQuart = function (t: number) {
+      return 1 - Math.pow(1 - t, 4);
+    };
+    var easeInQuart = function (t: number) {
+      return t * t * t * t;
+    };
+
+    function clamp(v: number, a: number, b: number) {
+      return v < a ? a : v > b ? b : v;
+    }
+    function tween(
+      t: number,
+      start: number,
+      end: number,
+      from: number,
+      to: number,
+      ease: (t: number) => number
+    ) {
+      if (end <= start) return to;
+      return from + (to - from) * ease(clamp((t - start) / (end - start), 0, 1));
+    }
+
+    var ROWS = (function () {
+      var rows: { y: number; h: number; i: number }[] = [],
+        y = 0,
+        i = 0;
+      while (y < R * 2) {
+        var t = y / (R * 2),
+          h = 3 + 15 * (1 - t) * (1 - t);
+        rows.push({ y: y, h: h, i: i });
+        y += h + 2 + 20 * t * t;
+        i += 1;
+      }
+      return rows;
+    })();
+
+    function el(cls: string, parent: HTMLElement) {
+      var d = document.createElement("div");
+      d.className = cls;
+      parent.appendChild(d);
+      return d;
+    }
+
+    function mount(host?: HTMLElement) {
+      var root = document.getElementById("sun-loader");
+      if (!root) {
+        root = document.createElement("div");
+        root.id = "sun-loader";
+        root.innerHTML = '<div id="sun-stage"></div>';
+        (host || document.body).appendChild(root);
+      }
+      var stage = root.querySelector("#sun-stage") as HTMLElement;
+      stage.textContent = "";
+
+      var mask = el("sl-abs sl-mask", stage);
+      var disc = el("sl-disc", mask);
+      var bars = ROWS.map(function (r) {
+        var b = el("sl-bar", disc);
+        b.style.top = r.y + "px";
+        b.style.height = r.h + "px";
+        return b;
+      });
+      var ring = el("sl-ring", mask);
+
+      var rule = el("sl-abs sl-rule", stage);
+      rule.style.top = HORIZON + "px";
+      rule.style.height = "3px";
+      var rule2 = el("sl-abs sl-rule", stage);
+      rule2.style.top = HORIZON + 46 + "px";
+      rule2.style.height = "1px";
+      rule2.style.opacity = ".18";
+      var ticks = [el("sl-abs sl-tick", stage), el("sl-abs sl-tick", stage)];
+      var dawn = el("sl-abs sl-dawn", stage);
+
+      var word = el("sl-abs sl-word", stage);
+      var glyphs: { base: HTMLElement; glare: HTMLElement }[] = [];
+      WORD.split("").forEach(function (ch) {
+        if (ch === " ") {
+          el("", word).style.width = "52px";
+          return;
+        }
+        var cell = el("sl-cell", word);
+        var g = el("sl-glyph", cell);
+        g.textContent = ch;
+        var glare = document.createElement("div");
+        glare.className = "sl-glare";
+        glare.textContent = ch;
+        g.appendChild(glare);
+        glyphs.push({ base: g, glare: glare });
+      });
+      var n = glyphs.length;
+
+      var label = el("sl-abs sl-label", stage);
+      var track = el("sl-abs sl-track", stage);
+      var thumb = el("sl-abs sl-thumb", stage);
+
+      function fit() {
+        var s = Math.min(root!.clientWidth / W, root!.clientHeight / H);
+        stage.style.transform = "translate(-50%,-50%) scale(" + s + ")";
+      }
+      fit();
+      global.addEventListener("resize", fit);
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+
+      var reduced =
+        global.matchMedia && global.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      var t0 = performance.now(),
+        exitAt: number | null = null,
+        raf = 0;
+
+      function draw(t: number) {
+        var x = exitAt === null ? 0 : clamp(t - exitAt, 0, EXIT + 0.2);
+
+        /* horizon */
+        var w =
+          tween(t, 0.1, 2.4, 0, 1, easeOutQuart) -
+          (exitAt === null ? 0 : tween(x, 0.05, 0.65, 0, 1, easeInQuart));
+        w = clamp(w, 0, 1);
+        rule.style.transform = "scaleX(" + w + ")";
+        rule2.style.transform = "scaleX(" + clamp(w * 0.86, 0, 1) + ")";
+
+        var tipO = clamp(
+          tween(t, 0.08, 0.3, 0, 1, easeOutCubic) - tween(t, 2.1, 2.65, 0, 1, easeInQuart),
+          0,
+          1
+        );
+        ticks.forEach(function (el2, k) {
+          el2.style.opacity = String(tipO);
+          el2.style.transform = "translateX(" + (k ? 1 : -1) * w * 760 + "px)";
+        });
+        var pulse = 0.55 + 0.45 * Math.sin((t - 0.2) * 4.2);
+        dawn.style.opacity = String(
+          clamp(
+            tween(t, 0.25, 1.9, 0, 0.85, easeOutCubic) -
+              tween(t, 2.25, 3.0, 0, 0.85, easeInQuart),
+            0,
+            1
+          ) * pulse
+        );
+
+        /* sun */
+        var cy =
+          tween(t, 1.0, 3.5, HORIZON + 300, HORIZON - 132, easeOutCubic) +
+          (exitAt === null ? 0 : tween(x, 0, 0.72, 0, 432, easeInQuart));
+        disc.style.top = cy - R + "px";
+        ring.style.top = cy - R - 34 + "px";
+        ring.style.opacity = String(
+          0.24 *
+            clamp(
+              tween(t, 1.6, 2.9, 0, 1, easeOutCubic) -
+                (exitAt === null ? 0 : tween(x, 0, 0.5, 0, 1, easeInQuart)),
+              0,
+              1
+            )
+        );
+        bars.forEach(function (b, i) {
+          var d = (ROWS.length - 1 - i) * 0.045;
+          var sx =
+            tween(t, 1.25 + d, 2.05 + d, 0, 1, easeOutQuart) -
+            (exitAt === null ? 0 : tween(x, i * 0.008, 0.45 + i * 0.008, 0, 1, easeInQuart));
+          b.style.transform = "scaleX(" + clamp(sx, 0, 1) + ")";
+        });
+
+        /* wordmark + glare */
+        var glareOn = clamp(
+          tween(t, INTRO - 0.5, INTRO + 0.2, 0, 1, easeOutCubic) -
+            (exitAt === null ? 0 : tween(x, 0, 0.35, 0, 1, easeInQuart)),
+          0,
+          1
+        );
+        var hold = exitAt === null ? t : exitAt;
+        var phase = reduced ? 0.5 : ((hold - INTRO + CYCLE * 100) % CYCLE) / CYCLE;
+        var head = -0.25 + 1.5 * phase;
+        glyphs.forEach(function (g, i) {
+          var s0 = 3.0 + i * 0.065;
+          var yIn = tween(t, s0, s0 + 0.8, 122, 0, easeOutQuart);
+          var sc = tween(t, s0, s0 + 0.9, 1.05, 1, easeOutQuart);
+          var yOut =
+            exitAt === null ? 0 : tween(x, i * 0.02, 0.4 + i * 0.02, 0, -128, easeInQuart);
+          g.base.style.transform = "translateY(" + (yIn + yOut) + "%) scale(" + sc + ")";
+          var d = (i / (n - 1) - head) / 0.12;
+          g.glare.style.opacity = String(reduced ? 0 : glareOn * Math.exp(-d * d));
+          g.glare.style.backgroundPosition = (1 - phase) * 100 + "% 50%";
+        });
+
+        /* status */
+        var o = clamp(
+          tween(t, INTRO - 0.7, INTRO, 0, 1, easeOutQuart) -
+            (exitAt === null ? 0 : tween(x, 0, 0.3, 0, 1, easeInQuart)),
+          0,
+          1
+        );
+        label.style.opacity = String(o);
+        track.style.opacity = String(0.12 * o);
+        thumb.style.opacity = String(o);
+        label.textContent =
+          "LOADING" + (reduced ? "" : ".".repeat(1 + (Math.floor(t * 2.4) % 3)));
+        thumb.style.transform = "translateX(" + phase * (1520 - 240) + "px)";
+      }
+
+      function frame(now: number) {
+        draw((now - t0) / 1000);
+        raf = requestAnimationFrame(frame);
+      }
+      if (reduced) {
+        draw(INTRO + 0.8);
+      } else {
+        draw(0);
+        raf = requestAnimationFrame(frame);
+        document.addEventListener("visibilitychange", function () {
+          if (!document.hidden) draw((performance.now() - t0) / 1000);
+        });
+      }
+
+      var api = {
+        element: root,
+        _done: null as Promise<void> | null,
+        finish: function () {
+          if (exitAt !== null) return api._done;
+          var elapsed = (performance.now() - t0) / 1000;
+          var wait = Math.max(0, MIN_VISIBLE - elapsed, INTRO + 0.6 - elapsed);
+          api._done = new Promise(function (res: () => void) {
+            setTimeout(function () {
+              exitAt = (performance.now() - t0) / 1000;
+              setTimeout(res, (EXIT + 0.2) * 1000);
+            }, wait * 1000);
+          });
+          return api._done;
+        },
+        destroy: function () {
+          cancelAnimationFrame(raf);
+          global.removeEventListener("resize", fit);
+          if (root!.parentNode) root!.parentNode.removeChild(root!);
+        },
+      };
+      return api;
+    }
+
+    var PLAYED_KEY = "sunLoaderPlayed";
+    var alreadyPlayed = false;
+    try {
+      alreadyPlayed = sessionStorage.getItem(PLAYED_KEY) === "1";
+    } catch (e) {}
+
+    if (alreadyPlayed) {
+      var existing = document.getElementById("sun-loader");
+      if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+    } else {
+      var loader = mount();
+      document.documentElement.style.overflow = "hidden";
+
+      /* Wait for the page to fully load AND for webfonts to finish, so a
+         slow connection holds on the loading screen instead of revealing
+         a half-loaded page. A generous safety timeout guarantees the
+         loader can never get stuck forever if something never resolves
+         (e.g. the network drops entirely). */
+      var pageReady = new Promise(function (res: () => void) {
+        if (document.readyState === "complete") res();
+        else global.addEventListener("load", function () { res(); });
+      });
+      var fontsReady =
+        document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+      var safetyTimeout = new Promise(function (res: () => void) {
+        setTimeout(res, 20000);
+      });
+
+      Promise.race([Promise.all([pageReady, fontsReady]), safetyTimeout]).then(function () {
+        loader.finish()!.then(function () {
+          loader.destroy();
+          document.documentElement.style.overflow = "";
+          try {
+            sessionStorage.setItem(PLAYED_KEY, "1");
+          } catch (e) {}
+        });
+      });
+    }
+  })(window);
+</script>

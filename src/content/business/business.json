@@ -1,0 +1,15 @@
+[
+  {
+    "id": "business",
+    "name": "Sun Industries",
+    "foundedYear": 2006,
+    "founder": "Mr. A. Iyappan",
+    "phone": "094439 09071",
+    "googleRating": 4.8,
+    "googleReviewCount": 6,
+    "address": null,
+    "email": null,
+    "workingHours": null,
+    "closingTime": "6:00 PM"
+  }
+]

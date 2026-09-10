@@ -1,0 +1,107 @@
+---
+import { getEntry } from "astro:content";
+import { Image } from "astro:assets";
+import TelLink from "../ui/TelLink.astro";
+import WhatsAppButton from "../ui/WhatsAppButton.astro";
+import OwnerSlot from "../ui/OwnerSlot.astro";
+import Button from "../ui/Button.astro";
+import logoIcon from "../../assets/Logos/logo-icon.svg";
+
+const business = await getEntry("business", "business");
+const serviceArea = await getEntry("serviceArea", "service-area");
+const { phone, closingTime, foundedYear, googleRating, googleReviewCount } = business!.data;
+
+const yearsServing = new Date().getFullYear() - foundedYear;
+
+const productLinks = [
+  { label: "uPVC Windows & Doors", href: "/upvc-windows" },
+  { label: "Steel Doors & Windows", href: "/steel-doors" },
+  { label: "Clamps & Wholesale", href: "/clamps" },
+  { label: "Laser Cutting", href: "/laser-cutting" },
+];
+
+const companyLinks = [
+  { label: "Home", href: "/" },
+  { label: "Our Work", href: "/our-work" },
+  { label: "Contact", href: "/contact" },
+  { label: "Get a Quote", href: "/get-a-quote" },
+];
+---
+
+<footer class="bg-ink text-surface">
+  <div class="border-b border-surface/10 px-4 py-6 text-center sm:py-28 md:px-11 lg:px-20">
+    <h2 class="mx-auto max-w-3xl text-xl leading-[1.25] tracking-tight sm:text-5xl lg:text-6xl">
+      Built in Nagercoil, trusted for {yearsServing}+ years.
+    </h2>
+    <Button href="/get-a-quote" class="mt-4 text-sm uppercase tracking-wide sm:mt-10">Get a free quote</Button>
+  </div>
+
+  <div class="grid grid-cols-2 gap-x-6 gap-y-4 px-4 py-5 sm:gap-10 sm:py-14 md:gap-8 md:px-11 lg:grid-cols-[1.2fr_1fr_1fr_1.4fr] lg:px-20">
+    <div class="col-span-2 lg:col-span-1">
+      <p class="flex items-center gap-2 text-lg font-bold tracking-tight text-surface">
+        <Image src={logoIcon} alt="" class="h-7 w-auto" />
+        Sun Industries
+      </p>
+      <p class="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-surface sm:mt-6">
+        {googleRating.toFixed(1)}<span class="text-sun" aria-hidden="true">★</span>
+        <span class="font-normal text-surface/60">· {googleReviewCount} reviews on Google</span>
+      </p>
+    </div>
+
+    <div>
+      <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-surface/50">Products</p>
+      <ul class="flex flex-col gap-1.5 text-sm">
+        {
+          productLinks.map((link) => (
+            <li>
+              <a href={link.href} class="text-surface/80 hover:text-sun">
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div>
+      <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-surface/50">Company</p>
+      <ul class="flex flex-col gap-1.5 text-sm">
+        {
+          companyLinks.map((link) => (
+            <li>
+              <a href={link.href} class="text-surface/80 hover:text-sun">
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="col-span-2 lg:col-span-1">
+      <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-surface/50">Reach us</p>
+      <p class="text-lg font-semibold text-surface">Ready to talk to us?</p>
+      <TelLink phone={phone} class="mt-1 text-xl font-bold text-surface hover:text-sun sm:mt-2 sm:text-2xl" />
+      <p class="mt-1 text-sm text-surface/50">Open until {closingTime}. Give us a call today.</p>
+
+      <div class="mt-2 flex flex-col items-start gap-1 sm:mt-4 sm:gap-2">
+        <OwnerSlot label="Address" variant="overlay" />
+        <OwnerSlot label="Email" variant="overlay" />
+      </div>
+
+      <WhatsAppButton
+        phone={phone}
+        message="Hi, I'd like to know more about Sun Industries."
+        class="mt-2 w-fit sm:mt-5"
+      />
+
+      <p class="mt-2 text-sm text-surface/50 sm:mt-5">
+        Serving {serviceArea!.data.confirmedTowns.join(", ")}.
+      </p>
+    </div>
+  </div>
+
+  <div class="border-t border-surface/10 px-4 py-2 text-xs text-surface/50 sm:py-4 md:px-11 lg:px-20">
+    &copy; {new Date().getFullYear()} Sun Industries. All rights reserved.
+  </div>
+</footer>

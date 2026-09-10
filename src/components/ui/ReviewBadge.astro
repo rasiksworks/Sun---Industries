@@ -1,0 +1,19 @@
+---
+import OwnerSlot from "./OwnerSlot.astro";
+
+interface Props {
+  rating: number;
+  reviewCount: number;
+  class?: string;
+}
+
+const { rating, reviewCount, class: className = "" } = Astro.props as Props;
+---
+
+<div class:list={["flex flex-wrap items-center gap-3", className]}>
+  <span class="inline-flex items-center gap-1 font-semibold text-ink">
+    {rating.toFixed(1)}<span class="text-sun-text" aria-hidden="true">★</span>
+    <span class="font-normal text-muted">· {reviewCount} reviews on Google</span>
+  </span>
+  <OwnerSlot label="Google listing link" class="min-h-0 px-3 py-1 text-xs" />
+</div>

@@ -1,0 +1,22 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  href: string;
+  ctaLabel?: string;
+}
+
+const { title, description, href, ctaLabel = "Explore" } = Astro.props as Props;
+---
+
+<a
+  href={href}
+  class="group flex flex-col gap-3 rounded-lg border border-haze bg-surface p-6 transition-colors hover:border-sun-text"
+>
+  <h3 class="text-lg font-semibold text-ink">{title}</h3>
+  <p class="font-body text-sm text-muted">{description}</p>
+  <span class="mt-auto inline-flex items-center gap-1 font-body text-sm font-medium text-sun-text">
+    {ctaLabel}
+    <span aria-hidden="true" class="transition-transform group-hover:translate-x-1">→</span>
+  </span>
+</a>

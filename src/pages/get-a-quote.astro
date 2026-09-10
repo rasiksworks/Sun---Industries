@@ -1,0 +1,39 @@
+---
+import { getEntry } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import QuoteForm from "../components/forms/QuoteForm.astro";
+import WhatsAppButton from "../components/ui/WhatsAppButton.astro";
+import TelLink from "../components/ui/TelLink.astro";
+import FaqAccordion from "../components/sections/FaqAccordion.astro";
+
+const business = await getEntry("business", "business");
+const phone = business!.data.phone;
+---
+
+<BaseLayout title="Get a Quote" description="Get a quote from Sun Industries: form, WhatsApp, or call.">
+  <section class="px-4 md:px-11 lg:px-20 py-12">
+    <h1 class="mb-2 text-3xl font-bold text-ink">Get a quote</h1>
+    <p class="mb-8 max-w-prose text-muted">
+      Fill in the form, message us on WhatsApp, or call directly, whichever's easiest for you.
+    </p>
+
+    <div class="grid max-w-xl gap-4 sm:grid-cols-2">
+      <WhatsAppButton
+        phone={phone}
+        message="Hi, I'd like a quote from Sun Industries."
+        class="text-base"
+      />
+      <TelLink
+        phone={phone}
+        label={`Call ${phone}`}
+        class="flex items-center justify-center rounded-md border border-ink px-5 py-3 font-medium text-ink hover:bg-haze/40"
+      />
+    </div>
+  </section>
+
+  <FaqAccordion />
+
+  <section class="px-4 md:px-11 lg:px-20 pb-12">
+    <QuoteForm />
+  </section>
+</BaseLayout>

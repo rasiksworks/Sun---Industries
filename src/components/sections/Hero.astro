@@ -1,0 +1,72 @@
+---
+import OwnerSlot from "../ui/OwnerSlot.astro";
+import Button from "../ui/Button.astro";
+
+interface Props {
+  variant?: "split" | "full";
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+  photoLabel?: string;
+}
+
+const {
+  variant = "split",
+  eyebrow,
+  title,
+  subtitle,
+  ctaLabel = "Book a free site measurement",
+  ctaHref = "/get-a-quote",
+  photoLabel = "Hero photo",
+} = Astro.props as Props;
+
+// "full" variant only: split the title into two lines at the first comma,
+// so the first clause anchors left and the second anchors right.
+const titleCommaIndex = title.indexOf(",");
+const titleLine1 = titleCommaIndex !== -1 ? title.slice(0, titleCommaIndex + 1) : title;
+const titleLine2 = titleCommaIndex !== -1 ? title.slice(titleCommaIndex + 1).trim() : "";
+---
+
+{
+  variant === "full" ? (
+    <section class="bg-surface px-4 pb-10 pt-24 md:px-11 lg:px-20 lg:pb-16 lg:pt-32">
+      {eyebrow && (
+        <p class="text-sm font-semibold uppercase tracking-wide text-sun-text">{eyebrow}</p>
+      )}
+      <h1
+        class="text-4xl font-bold leading-[1.05] text-ink sm:whitespace-nowrap sm:[font-size:clamp(1.75rem,4.8vw,4.5rem)]"
+        data-stx-skip
+      >
+        <span class="block text-left">{titleLine1}</span>
+        {titleLine2 && <span class="block text-right">{titleLine2}</span>}
+      </h1>
+      <div class="mt-8 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        {subtitle && <p class="max-w-md font-body text-base text-muted sm:text-lg">{subtitle}</p>}
+        <Button href={ctaHref} class="shrink-0 font-body font-semibold">{ctaLabel}</Button>
+      </div>
+    </section>
+  ) : (
+    <section class="grid gap-0 border-b border-haze lg:grid-cols-2">
+      <div class="order-2 flex flex-col justify-center gap-5 px-4 md:px-11 lg:px-20 py-12 lg:order-1 lg:py-20">
+        <div
+          class="grid grid-cols-6 gap-2 opacity-10"
+          style="grid-template-rows: repeat(3, 1px);"
+          aria-hidden="true"
+        >
+          {Array.from({ length: 18 }).map(() => (
+            <span class="h-px w-full bg-ink" />
+          ))}
+        </div>
+        {eyebrow && <p class="text-sm font-semibold uppercase tracking-wide text-sun-text">{eyebrow}</p>}
+        <h1 class="text-3xl font-bold leading-tight text-ink sm:text-4xl lg:text-5xl">{title}</h1>
+        {subtitle && <p class="max-w-prose font-body text-base text-muted sm:text-lg">{subtitle}</p>}
+        <Button href={ctaHref} class="font-body font-semibold">{ctaLabel}</Button>
+      </div>
+      <div class="order-1 lg:order-2">
+        <OwnerSlot label={photoLabel} class="min-h-64 w-full rounded-none border-x-0 lg:min-h-full" />
+      </div>
+    </section>
+  )
+}

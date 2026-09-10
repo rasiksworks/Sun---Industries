@@ -1,0 +1,137 @@
+@import "tailwindcss";
+@import "lenis/dist/lenis.css";
+
+@theme {
+  --color-ink: #0e2e33;
+  --color-ink-dark: #081b1f;
+  --color-ink-darker: #040f11;
+  --color-ink-darkest: #020808;
+  --color-surface: #ffffff;
+  --color-haze: #e6ebea;
+  --color-muted: #5a6e71;
+  --color-sun: #fec428;
+  --color-sun-deep: #d0a121;
+  /* Same hue as --color-sun, darkened enough to pass WCAG AA (4.9:1) as
+     text/icon color on white or light backgrounds; the base --color-sun is
+     too light for that (only 1.6:1) and belongs on filled backgrounds. */
+  --color-sun-text: #8c6c16;
+  --color-whatsapp: #25d366;
+  --color-whatsapp-deep: #1c9e51;
+
+  --font-sans: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-tamil: "Noto Sans Tamil", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-alt: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --radius: 0px;
+  --radius-xs: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-4xl: 0px;
+  --radius-full: 0px;
+}
+
+body {
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+/* Radial reveal button: a filled circle expands from the pointer position
+   on hover, in a deeper shade of the button's own color. Corner radius is
+   controlled entirely by the button's own rounded-* class, this only
+   affects the fill. */
+.btn-radial {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.btn-radial-fill {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--btn-radial-color, var(--color-ink));
+  clip-path: circle(0% at var(--rx, 50%) var(--ry, 50%));
+  transition: clip-path 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+.btn-radial:hover .btn-radial-fill,
+.btn-radial:focus-visible .btn-radial-fill {
+  clip-path: circle(140% at var(--rx, 50%) var(--ry, 50%));
+}
+.btn-radial-label {
+  position: relative;
+  z-index: 1;
+}
+
+/* Shared type style for large stat numbers (20+, 20-yr, 1 week, etc.)
+   across stat cards and the dark workshop-stats section. Font-size is
+   fluid (scales continuously with viewport width between the two ends
+   of the clamp) rather than fixed, so it adapts at every breakpoint
+   instead of just jumping at a couple of hard-coded widths. */
+.stat-number {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(2.5rem, 1.4rem + 4.7vw, 5.625rem);
+  line-height: normal;
+  letter-spacing: normal;
+}
+
+/* Shared type style for the large About-section body copy. Size scales
+   fluidly with viewport width (20px on small phones up to 48px on
+   desktop, per spec); line-height and letter-spacing are relative
+   (unitless / em) so they stay proportional at every size instead of
+   only being correct at the one pixel value they were specified at. */
+.about-body {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: clamp(1.25rem, 0.65rem + 2.6vw, 3rem);
+  line-height: 1.1875;
+  letter-spacing: -0.03125em;
+}
+
+/* Dark workshop-stats card value: distinct from .stat-number (which is
+   Space Grotesk, used only by the About-section stat cards per spec).
+   This one is Archivo SemiBold, 40px on mobile scaling to 48px desktop. */
+.dark-stat-value {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: clamp(2.5rem, 2.15rem + 1vw, 3rem);
+  line-height: 1;
+  letter-spacing: normal;
+}
+
+/* Scroll-triggered text highlight for every h1/h2 (see ScrollTextHighlight
+   .astro): words dim to a low opacity and fade in progressively as the
+   heading scrolls through the viewport. Opacity-only, so it never
+   overrides a heading's own color (works the same on light or dark
+   backgrounds, on plain or multi-colored headings). */
+.stx-word {
+  opacity: 0.25;
+  transition: opacity 0.4s ease-out;
+  will-change: opacity;
+}
+.stx-word.stx-active {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .stx-word {
+    opacity: 1;
+    transition: none;
+  }
+}
+
+/* Hides the native scrollbar on horizontally-scrolling rows while keeping
+   the scroll behavior itself (mouse wheel, touch, drag) fully working. */
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

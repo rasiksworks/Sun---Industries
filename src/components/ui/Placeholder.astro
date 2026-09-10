@@ -1,0 +1,23 @@
+---
+import { SHOW_PLACEHOLDERS } from "../../lib/flags";
+
+interface Props {
+  value?: string | number | null;
+  label: string;
+}
+
+const { value, label } = Astro.props as Props;
+const hasValue = value !== null && value !== undefined && value !== "";
+const display = hasValue ? value : label;
+---
+
+{
+  SHOW_PLACEHOLDERS && (
+    <span
+      class="cursor-help border-b border-dotted border-sun-text decoration-sun-text"
+      title={hasValue ? "To be confirmed" : label}
+    >
+      {display}
+    </span>
+  )
+}

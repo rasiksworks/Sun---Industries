@@ -1,0 +1,26 @@
+---
+interface Props {
+  phone: string;
+  message: string;
+  label?: string;
+  class?: string;
+}
+
+const { phone, message, label = "Chat on WhatsApp", class: className = "" } = Astro.props as Props;
+const digits = phone.replace(/\D/g, "").replace(/^0+/, "");
+const href = `https://wa.me/91${digits}?text=${encodeURIComponent(message)}`;
+---
+
+<a
+  href={href}
+  target="_blank"
+  rel="noopener noreferrer"
+  class:list={[
+    "btn-radial inline-flex items-center justify-center gap-2 rounded-md bg-whatsapp px-5 py-3 font-medium text-white",
+    className,
+  ]}
+  style="--btn-radial-color: var(--color-whatsapp-deep)"
+>
+  <span class="btn-radial-fill"></span>
+  <span class="btn-radial-label">{label}</span>
+</a>

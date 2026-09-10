@@ -1,0 +1,42 @@
+---
+import type { ImageMetadata } from "astro";
+import OwnerSlot from "../ui/OwnerSlot.astro";
+import RevealImage from "../ui/RevealImage.astro";
+
+interface Props {
+  limit?: number;
+}
+
+const { limit } = Astro.props as Props;
+
+const galleryImages = import.meta.glob<{ default: ImageMetadata }>(
+  "../../assets/gallery/*.{jpg,jpeg,png,webp,avif}",
+  { eager: true },
+);
+
+const entries = Object.entries(galleryImages)
+  .map(([path, mod]) => ({ path, image: mod.default }))
+  .sort((a, b) => a.path.localeCompare(b.path));
+
+const files = limit ? entries.slice(0, limit) : entries;
+---
+
+{
+  files.length === 0 ? (
+    <OwnerSlot label="Gallery photos" class="min-h-56 w-full" />
+  ) : (
+    <div class="grid gap-4 sm:grid-cols-3">
+      {files.map((entry, i) => (
+        <RevealImage
+          src={entry.image}
+          alt="Sun Industries completed work photo"
+          class:list={[
+            "w-full rounded-lg border border-haze",
+            i % 3 === 0 ? "aspect-[3/4]" : "aspect-square",
+          ]}
+          sizes="(min-width: 640px) 33vw, 100vw"
+        />
+      ))}
+    </div>
+  )
+}

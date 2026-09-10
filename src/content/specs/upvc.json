@@ -1,0 +1,24 @@
+[
+  {
+    "id": "upvc",
+    "ratePerSqFt": 330,
+    "reinforcementThicknessMm": 1.2,
+    "gasketMaterial": "EPDM",
+    "profileBrand": null,
+    "frameWarrantyYears": 20,
+    "hardwareWarrantyYears": 1,
+    "turnaroundDays": 7,
+    "productTypes": [
+      "Sliding window (2 track)",
+      "Sliding window (3 track)",
+      "Casement window",
+      "Fixed window",
+      "Ventilator",
+      "Sliding door",
+      "French door",
+      "Casement door",
+      "Mosquito mesh"
+    ],
+    "glassOptions": ["4mm", "5mm", "6mm", "8mm", "Toughened", "Frosted", "Tinted", "Double glazed"]
+  }
+]

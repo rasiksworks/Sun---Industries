@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; background: #E7E4DC; }
+  a { color: #16181C; text-decoration: none; }
+  a:hover { color: #D9A21B; }
+</style>
+<script>window.OM_SCENES = '[{"name":"Horizon","dur":1.0,"desc":"A bare horizon rule draws out across the light ground"},{"name":"Sunrise","dur":1.9,"desc":"The louvred sun disc assembles and climbs up from behind the horizon"},{"name":"Wordmark","dur":1.5,"desc":"SUN INDUSTRIES reveals letter by letter in front of the risen disc"},{"name":"Loading","dur":2.8,"desc":"The sun stays up while a glare sweeps through the wordmark and the loading bar scans"},{"name":"Complete","dur":0.8,"desc":"Loading ends: type lifts away and the disc sinks back below the horizon"}]';</script>
+<script>window.OM_PLAYBACK = '{"mode":"loop"}';</script>
+</helmet>
+<div style="position: absolute; inset: 0; width: 100%; height: 100%;">
+  <x-import component-from-global-scope="CompositionStage" from="./animations-v3.jsx ./sun-piece.jsx" width="{{ w }}" height="{{ h }}" scenes="{{ scenes }}" playback="{{ playback }}" bg="#F4F2ED" style="position: absolute; inset: 0; width: 100%; height: 100%;" hint-size="100%,100%">
+    <x-import component-from-global-scope="SunPiece" hint-size="100%,100%"></x-import>
+  </x-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;motionEditor&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Authoring&quot;}}">
+class Component extends DCLogic {
+  componentDidMount() {
+    const kick = () => window.dispatchEvent(new Event('resize'));
+    requestAnimationFrame(() => { kick(); requestAnimationFrame(kick); });
+    this._t = [setTimeout(kick, 120), setTimeout(kick, 400), setTimeout(kick, 1200)];
+    if (window.ResizeObserver) {
+      this._ro = new ResizeObserver(kick);
+      this._ro.observe(document.documentElement);
+    }
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(kick);
+  }
+  componentWillUnmount() {
+    (this._t || []).forEach(clearTimeout);
+    if (this._ro) this._ro.disconnect();
+  }
+  renderVals() {
+    return {
+      scenes: window.OM_SCENES,
+      playback: window.OM_PLAYBACK,
+      w: 1920,
+      h: 1080,
+    };
+  }
+}
+</script>
+</body>
+</html>

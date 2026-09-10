@@ -1,0 +1,29 @@
+---
+import type { ImageMetadata } from "astro";
+import PillBadge from "../ui/PillBadge.astro";
+import RevealImage from "../ui/RevealImage.astro";
+
+interface Props {
+  imageSrc: ImageMetadata;
+  imageAlt: string;
+  body: string;
+}
+
+const { imageSrc, imageAlt, body } = Astro.props as Props;
+---
+
+<section class="px-4 md:px-11 lg:px-20 py-12">
+  <div class="grid gap-8 lg:grid-cols-[auto_1fr] lg:items-center lg:gap-10">
+    <RevealImage
+      src={imageSrc}
+      alt={imageAlt}
+      class="aspect-square w-full max-w-sm rounded-lg object-cover"
+      widths={[320, 384, 640]}
+      sizes="(min-width: 1024px) 384px, 100vw"
+    />
+    <div>
+      <PillBadge label="About" />
+      <h2 class="about-body mt-6 text-ink">{body}</h2>
+    </div>
+  </div>
+</section>

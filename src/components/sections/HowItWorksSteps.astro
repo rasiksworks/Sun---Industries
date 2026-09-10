@@ -1,0 +1,70 @@
+---
+import { Gauge, ShieldCheck, Layers, Shapes } from "@lucide/astro";
+import PillBadge from "../ui/PillBadge.astro";
+import TiltCard from "../ui/TiltCard.astro";
+
+interface Props {
+  turnaroundWeeks: number;
+  frameWarrantyYears: number;
+  hardwareWarrantyYears: number;
+  productTypeCount: number;
+}
+
+const { turnaroundWeeks, frameWarrantyYears, hardwareWarrantyYears, productTypeCount } =
+  Astro.props as Props;
+
+const cards = [
+  {
+    title: "Speed",
+    body: `${turnaroundWeeks} week${turnaroundWeeks === 1 ? "" : "s"} from order to fitting.`,
+    icon: Gauge,
+  },
+  {
+    title: "Warranty",
+    body: `${frameWarrantyYears} years on the frame, plus ${hardwareWarrantyYears} year on the hardware.`,
+    icon: ShieldCheck,
+  },
+  {
+    title: "Transparency",
+    body: "We tell you the exact spec, reinforcement thickness and gasket type, not just a price.",
+    icon: Layers,
+  },
+  {
+    title: "Range",
+    body: `${productTypeCount} window and door types made, from sliding windows to mosquito mesh.`,
+    icon: Shapes,
+  },
+];
+---
+
+<section class="bg-[#F4F4F4] px-4 md:px-11 lg:px-20 py-16">
+  <div class="grid gap-10 lg:grid-cols-2 lg:gap-16">
+    <div class="lg:sticky lg:top-32 lg:self-start">
+      <PillBadge label="How it works" />
+      <h2 class="mt-6 text-3xl font-bold leading-tight sm:text-4xl">
+        <span class="block text-muted">We don't just sell a price.</span>
+        <span class="block text-ink">We show you what's inside.</span>
+      </h2>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      {
+        cards.map((card) => (
+          <TiltCard>
+            <card.icon
+              class="size-8 text-ink transition-colors duration-300 group-hover:text-surface group-[.is-touched]:text-surface"
+              stroke-width={1.5}
+              aria-hidden="true"
+            />
+            <h3 class="mt-5 font-display text-sm font-bold uppercase tracking-wide text-ink transition-colors duration-300 group-hover:text-surface group-[.is-touched]:text-surface">
+              {card.title}
+            </h3>
+            <p class="mt-2 font-body text-sm font-medium text-muted transition-colors duration-300 group-hover:text-surface/80 group-[.is-touched]:text-surface/80">
+              {card.body}
+            </p>
+          </TiltCard>
+        ))
+      }
+    </div>
+  </div>
+</section>

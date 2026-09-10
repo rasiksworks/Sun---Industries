@@ -1,0 +1,30 @@
+---
+---
+
+<script>
+  function updatePosition(target: HTMLElement, clientX: number, clientY: number) {
+    const rect = target.getBoundingClientRect();
+    const x = ((clientX - rect.left) / rect.width) * 100;
+    const y = ((clientY - rect.top) / rect.height) * 100;
+    target.style.setProperty("--rx", x + "%");
+    target.style.setProperty("--ry", y + "%");
+  }
+
+  document.addEventListener(
+    "pointermove",
+    (event) => {
+      const target = (event.target as HTMLElement)?.closest<HTMLElement>(".btn-radial");
+      if (target) updatePosition(target, event.clientX, event.clientY);
+    },
+    { passive: true }
+  );
+
+  document.addEventListener(
+    "pointerdown",
+    (event) => {
+      const target = (event.target as HTMLElement)?.closest<HTMLElement>(".btn-radial");
+      if (target) updatePosition(target, event.clientX, event.clientY);
+    },
+    { passive: true }
+  );
+</script>

@@ -1,0 +1,48 @@
+---
+interface Props {
+  ratePerSqFt: number;
+  reinforcementThicknessMm: number;
+  gasketMaterial: string;
+  frameWarrantyYears: number;
+  hardwareWarrantyYears: number;
+  turnaroundDays: number;
+  class?: string;
+}
+
+const {
+  ratePerSqFt,
+  reinforcementThicknessMm,
+  gasketMaterial,
+  frameWarrantyYears,
+  hardwareWarrantyYears,
+  turnaroundDays,
+  class: className = "",
+} = Astro.props as Props;
+
+const turnaroundWeeks = Math.round(turnaroundDays / 7);
+
+const items = [
+  `₹${ratePerSqFt}/sq ft`,
+  `${reinforcementThicknessMm}mm steel reinforcement`,
+  `${gasketMaterial} gasket`,
+  `${frameWarrantyYears}-year frame warranty`,
+  `${hardwareWarrantyYears}-year hardware warranty`,
+  `${turnaroundWeeks} week order-to-fitting`,
+];
+---
+
+<div
+  class:list={[
+    "flex flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-lg bg-ink px-6 py-5 text-center text-sm text-surface sm:text-base",
+    className,
+  ]}
+>
+  {
+    items.map((item, i) => (
+      <>
+        <span class={i === 0 ? "font-bold text-sun" : ""}>{item}</span>
+        {i < items.length - 1 && <span class="text-surface/50" aria-hidden="true">·</span>}
+      </>
+    ))
+  }
+</div>

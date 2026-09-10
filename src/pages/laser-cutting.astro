@@ -1,0 +1,52 @@
+---
+import { getEntry } from "astro:content";
+import { ClipboardList, Layers, Ruler, Maximize, Cpu, Crosshair, FileType, Clock, Boxes } from "@lucide/astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Hero from "../components/sections/Hero.astro";
+import SpecTable from "../components/ui/SpecTable.astro";
+
+const laser = await getEntry("specsLaserCutting", "laser-cutting");
+const {
+  materialsCut,
+  thicknessRange,
+  maxSheetSize,
+  machineAndWattage,
+  tolerance,
+  drawingFormats,
+  turnaround,
+  minimumOrder,
+} = laser!.data;
+---
+
+<BaseLayout title="Laser Cutting" description="Laser cutting from Sun Industries for workshops and fabricators.">
+  <Hero
+    eyebrow="Laser Cutting"
+    title="Laser cutting"
+    subtitle="Upload a drawing and get a cutting quote."
+    ctaLabel="Upload a drawing"
+    ctaHref="/get-a-quote"
+    photoLabel="Laser cutting photo"
+  />
+
+  <section class="px-4 md:px-11 lg:px-20 py-12">
+    <div class="mb-6 flex items-center gap-3">
+      <span class="flex size-9 shrink-0 items-center justify-center rounded-md bg-haze/60 text-ink">
+        <ClipboardList class="size-4" aria-hidden="true" />
+      </span>
+      <h2 class="text-2xl font-bold text-ink">Specifications</h2>
+    </div>
+    <SpecTable
+      rows={[
+        { label: "Materials cut", value: materialsCut?.join(", ") ?? null, status: "owner", icon: Layers },
+        { label: "Thickness range", value: thicknessRange, status: "owner", icon: Ruler },
+        { label: "Max sheet size", value: maxSheetSize, status: "owner", icon: Maximize },
+        { label: "Machine & wattage", value: machineAndWattage, status: "owner", icon: Cpu },
+        { label: "Tolerance", value: tolerance, status: "owner", icon: Crosshair },
+        { label: "Drawing formats accepted", value: drawingFormats.join(", "), status: "confirm", icon: FileType },
+        { label: "Turnaround", value: turnaround, status: "owner", icon: Clock },
+        { label: "Minimum order", value: minimumOrder, status: "owner", icon: Boxes },
+      ]}
+    />
+  </section>
+
+</BaseLayout>

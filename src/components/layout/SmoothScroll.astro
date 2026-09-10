@@ -1,0 +1,13 @@
+---
+---
+
+<script>
+  import Lenis from "lenis";
+
+  new Lenis({
+    duration: 1.0,
+    easing: (t: number) => 1 - Math.pow(1 - t, 3),
+    autoRaf: true,
+    anchors: true,
+  });
+</script>

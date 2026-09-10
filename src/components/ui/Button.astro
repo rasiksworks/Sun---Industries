@@ -1,0 +1,54 @@
+---
+interface Props {
+  href: string;
+  variant?: "sun" | "whatsapp" | "outline";
+  size?: "md" | "sm";
+  external?: boolean;
+  class?: string;
+}
+
+const {
+  href,
+  variant = "sun",
+  size = "md",
+  external = false,
+  class: className = "",
+} = Astro.props as Props;
+
+const sizeClass = size === "sm" ? "px-4 py-2 text-sm font-semibold" : "px-6 py-3 font-semibold";
+---
+
+{
+  variant === "outline" ? (
+    <a
+      href={href}
+      target={external ? "_blank" : undefined}
+      rel={external ? "noopener noreferrer" : undefined}
+      class:list={[
+        "inline-flex items-center justify-center gap-2 rounded-md border border-ink text-ink transition-colors hover:bg-ink hover:text-surface",
+        sizeClass,
+        className,
+      ]}
+    >
+      <slot />
+    </a>
+  ) : (
+    <a
+      href={href}
+      target={external ? "_blank" : undefined}
+      rel={external ? "noopener noreferrer" : undefined}
+      class:list={[
+        "btn-radial inline-flex items-center justify-center gap-2 rounded-md",
+        variant === "whatsapp" ? "bg-whatsapp text-white" : "bg-sun text-ink",
+        sizeClass,
+        className,
+      ]}
+      style={`--btn-radial-color: ${variant === "whatsapp" ? "var(--color-whatsapp-deep)" : "var(--color-sun-deep)"}`}
+    >
+      <span class="btn-radial-fill" />
+      <span class="btn-radial-label inline-flex items-center gap-2">
+        <slot />
+      </span>
+    </a>
+  )
+}

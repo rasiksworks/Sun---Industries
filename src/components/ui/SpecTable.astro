@@ -1,0 +1,64 @@
+---
+import Placeholder from "./Placeholder.astro";
+import OwnerSlot from "./OwnerSlot.astro";
+
+interface Row {
+  label: string;
+  value?: string | number | null;
+  status: "verified" | "confirm" | "owner";
+  icon?: any;
+}
+
+interface Props {
+  title?: string;
+  rows: Row[];
+}
+
+const { title, rows } = Astro.props as Props;
+
+const statusDot = {
+  verified: "bg-whatsapp",
+  confirm: "bg-sun",
+  owner: "bg-muted/50",
+} as const;
+
+const statusTitle = {
+  verified: "Verified",
+  confirm: "Needs confirmation",
+  owner: "Waiting on owner",
+} as const;
+---
+
+<div class="overflow-hidden rounded-lg border border-haze">
+  {title && <h3 class="border-b border-haze bg-haze/60 px-4 py-3 font-semibold text-ink">{title}</h3>}
+  <dl class="divide-y divide-haze">
+    {
+      rows.map((row) => (
+        <div class="flex flex-col gap-1.5 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+          <dt class="flex items-center gap-2.5 text-sm font-medium text-muted">
+            {row.icon && (
+              <span class="flex size-7 shrink-0 items-center justify-center rounded-md bg-haze/60 text-ink">
+                <row.icon class="size-3.5" aria-hidden="true" />
+              </span>
+            )}
+            {row.label}
+          </dt>
+          <dd class="flex items-center gap-2 text-sm text-ink sm:justify-end">
+            <span
+              class:list={["size-1.5 shrink-0 rounded-full", statusDot[row.status]]}
+              title={statusTitle[row.status]}
+              aria-hidden="true"
+            />
+            {row.status === "owner" ? (
+              <OwnerSlot label={row.label} class="min-h-0 justify-end px-3 py-1 text-xs" />
+            ) : row.status === "confirm" ? (
+              <Placeholder value={row.value} label={row.label} />
+            ) : (
+              row.value
+            )}
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
+</div>

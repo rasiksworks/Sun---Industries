@@ -1,0 +1,49 @@
+---
+interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+const faqs: FaqItem[] = [
+  {
+    question: "Do you fit it yourselves, or just supply the material?",
+    answer:
+      "Both, it depends what you'd like. We can measure, supply, and fit, or just supply if you're fitting it yourself.",
+  },
+  {
+    question: "How long does it take?",
+    answer: "About a week from order to fitting.",
+  },
+  {
+    question: "What's the warranty?",
+    answer: "20 years on the frame, 1 year on the hardware.",
+  },
+  {
+    question: "Do you cover my area?",
+    answer: "Currently Nagercoil. Ask us if you're nearby, we may still be able to help.",
+  },
+  {
+    question: "What's actually inside the frame?",
+    answer:
+      "1.2mm steel reinforcement and an EPDM gasket, ask us for the full spec if you'd like more detail.",
+  },
+  {
+    question: "Can I order in bulk or wholesale?",
+    answer: "Yes, for clamps: wholesale only, and we already ship outside the district.",
+  },
+];
+---
+
+<section class="px-4 md:px-11 lg:px-20 py-12">
+  <h2 class="mb-6 text-2xl font-bold text-ink">Frequently asked questions</h2>
+  <div class="divide-y divide-haze border-y border-haze">
+    {
+      faqs.map((faq) => (
+        <details class="py-4">
+          <summary class="cursor-pointer font-medium text-ink marker:text-muted">{faq.question}</summary>
+          <p class="mt-3 text-muted">{faq.answer}</p>
+        </details>
+      ))
+    }
+  </div>
+</section>

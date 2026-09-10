@@ -1,0 +1,14 @@
+---
+interface Props {
+  phone: string;
+  label?: string;
+  class?: string;
+}
+
+const { phone, label = phone, class: className = "" } = Astro.props as Props;
+const digits = phone.replace(/\D/g, "").replace(/^0+/, "");
+---
+
+<a href={`tel:+91${digits}`} class:list={["inline-flex items-center gap-2", className]}>
+  {label}
+</a>

@@ -1,0 +1,156 @@
+---
+import { getEntry } from "astro:content";
+import { Image } from "astro:assets";
+import TelLink from "../ui/TelLink.astro";
+import Button from "../ui/Button.astro";
+import logoIcon from "../../assets/Logos/logo-icon.svg";
+
+const business = await getEntry("business", "business");
+const phone = business!.data.phone;
+
+const windowsDropdown = [
+  { label: "uPVC Windows & Doors", href: "/upvc-windows" },
+  { label: "Steel Doors & Windows", href: "/steel-doors" },
+];
+
+const businessDropdown = [
+  { label: "Clamps & Wholesale", href: "/clamps" },
+  { label: "Laser Cutting", href: "/laser-cutting" },
+];
+
+const navLinks = [
+  { label: "Our Work", href: "/our-work" },
+  { label: "Contact", href: "/contact" },
+];
+---
+
+<header class="sticky top-0 z-40 border-b border-haze bg-surface/95 backdrop-blur">
+  <div class="flex items-center justify-between gap-4 px-4 md:px-11 lg:px-20 py-3">
+    <a href="/" class="flex items-center gap-2 text-lg font-bold tracking-tight text-ink">
+      <Image src={logoIcon} alt="" class="h-8 w-auto" />
+      Sun Industries
+    </a>
+
+    <nav class="hidden items-center gap-6 lg:flex" aria-label="Primary">
+      <a href="/" class="text-sm font-medium text-ink hover:text-sun-text">Home</a>
+
+      <div class="group relative">
+        <button type="button" class="flex items-center gap-1 text-sm font-medium text-ink hover:text-sun-text">
+          Windows & Doors
+          <span aria-hidden="true" class="text-xs">▾</span>
+        </button>
+        <div
+          class="invisible absolute left-0 top-full z-50 min-w-56 rounded-md border border-haze bg-surface py-2 opacity-0 shadow-lg transition-opacity duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100"
+        >
+          {
+            windowsDropdown.map((item) => (
+              <a href={item.href} class="block px-4 py-2 text-sm text-ink hover:bg-haze/60 hover:text-sun-text">
+                {item.label}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="group relative">
+        <button type="button" class="flex items-center gap-1 text-sm font-medium text-ink hover:text-sun-text">
+          For Businesses
+          <span aria-hidden="true" class="text-xs">▾</span>
+        </button>
+        <div
+          class="invisible absolute left-0 top-full z-50 min-w-56 rounded-md border border-haze bg-surface py-2 opacity-0 shadow-lg transition-opacity duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100"
+        >
+          {
+            businessDropdown.map((item) => (
+              <a href={item.href} class="block px-4 py-2 text-sm text-ink hover:bg-haze/60 hover:text-sun-text">
+                {item.label}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+
+      {
+        navLinks.map((item) => (
+          <a href={item.href} class="text-sm font-medium text-ink hover:text-sun-text">
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="hidden lg:flex">
+      <Button href="/get-a-quote" size="sm">Get a Quote</Button>
+    </div>
+
+    <button
+      type="button"
+      id="menu-toggle"
+      class="inline-flex items-center justify-center rounded-md border border-haze p-2 lg:hidden"
+      aria-label="Open menu"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      <span aria-hidden="true">☰</span>
+    </button>
+  </div>
+
+  <div id="mobile-menu" class="hidden border-t border-haze bg-surface lg:hidden" data-open="false">
+    <nav class="flex flex-col gap-1 px-4 py-3" aria-label="Mobile">
+      <a href="/" class="rounded px-2 py-2 text-sm font-medium text-ink hover:bg-haze/60">Home</a>
+
+      <details class="group rounded px-2 py-2">
+        <summary class="flex cursor-pointer list-none items-center justify-between text-sm font-medium text-ink [&::-webkit-details-marker]:hidden">
+          Windows & Doors
+          <span aria-hidden="true" class="text-xs transition-transform group-open:rotate-180">▾</span>
+        </summary>
+        <div class="mt-1 flex flex-col gap-1 border-l border-haze pl-3">
+          {
+            windowsDropdown.map((item) => (
+              <a href={item.href} class="rounded px-2 py-2 text-sm text-ink hover:bg-haze/60">
+                {item.label}
+              </a>
+            ))
+          }
+        </div>
+      </details>
+
+      <details class="group rounded px-2 py-2">
+        <summary class="flex cursor-pointer list-none items-center justify-between text-sm font-medium text-ink [&::-webkit-details-marker]:hidden">
+          For Businesses
+          <span aria-hidden="true" class="text-xs transition-transform group-open:rotate-180">▾</span>
+        </summary>
+        <div class="mt-1 flex flex-col gap-1 border-l border-haze pl-3">
+          {
+            businessDropdown.map((item) => (
+              <a href={item.href} class="rounded px-2 py-2 text-sm text-ink hover:bg-haze/60">
+                {item.label}
+              </a>
+            ))
+          }
+        </div>
+      </details>
+
+      {
+        navLinks.map((item) => (
+          <a href={item.href} class="rounded px-2 py-2 text-sm font-medium text-ink hover:bg-haze/60">
+            {item.label}
+          </a>
+        ))
+      }
+
+      <TelLink phone={phone} class="rounded px-2 py-2 text-sm font-medium text-ink hover:bg-haze/60" />
+      <Button href="/get-a-quote" size="sm" class="mt-2">Get a Quote</Button>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const toggle = document.getElementById("menu-toggle");
+  const menu = document.getElementById("mobile-menu");
+
+  toggle?.addEventListener("click", () => {
+    const isOpen = menu?.classList.toggle("hidden") === false;
+    toggle.setAttribute("aria-expanded", String(isOpen));
+  });
+</script>

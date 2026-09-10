@@ -1,0 +1,33 @@
+---
+interface Props {
+  label: string;
+  class?: string;
+  align?: "center" | "top";
+  variant?: "box" | "overlay";
+}
+
+const { label, class: className = "", align = "center", variant = "box" } = Astro.props as Props;
+---
+
+{
+  variant === "overlay" ? (
+    <span
+      class:list={[
+        "inline-block border-b border-dashed border-surface/70 text-sm text-surface",
+        className,
+      ]}
+    >
+      {label}: to be provided
+    </span>
+  ) : (
+    <div
+      class:list={[
+        "flex min-h-24 justify-center rounded-md border-2 border-dashed border-muted/40 bg-haze/50 px-4 py-6 text-center text-sm text-muted",
+        align === "top" ? "items-start pt-6" : "items-center",
+        className,
+      ]}
+    >
+      <span>{label}: to be provided</span>
+    </div>
+  )
+}

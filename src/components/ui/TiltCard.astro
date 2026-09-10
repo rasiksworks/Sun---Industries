@@ -1,0 +1,122 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className = "" } = Astro.props as Props;
+---
+
+<div class:list={["tilt-card group relative overflow-hidden bg-surface px-6 py-6", className]} data-tilt>
+  <div class="tilt-card-glow" aria-hidden="true"></div>
+  <div class="tilt-card-fill" aria-hidden="true"></div>
+  <div class="relative">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .tilt-card {
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition:
+      transform 0.2s ease-out,
+      box-shadow 0.2s ease-out;
+  }
+  .tilt-card:hover {
+    box-shadow: 0 12px 24px -12px rgb(14 46 51 / 0.25);
+  }
+  .tilt-card-glow {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease-out;
+    background: radial-gradient(circle 220px at var(--tilt-x, 50%) var(--tilt-y, 50%), var(--color-sun) 0%, transparent 70%);
+  }
+  .tilt-card:hover .tilt-card-glow {
+    opacity: 0.12;
+  }
+  .tilt-card-fill {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: var(--color-ink);
+    clip-path: circle(0% at var(--tilt-x, 50%) var(--tilt-y, 50%));
+    transition: clip-path 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+  .tilt-card:hover .tilt-card-fill,
+  .tilt-card:focus-within .tilt-card-fill,
+  .tilt-card.is-touched .tilt-card-fill {
+    clip-path: circle(140% at var(--tilt-x, 50%) var(--tilt-y, 50%));
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tilt-card {
+      transition: none;
+    }
+    .tilt-card-fill {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const ROTATION_FACTOR = 10;
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function handleMove(e: PointerEvent) {
+    if (prefersReducedMotion || e.pointerType !== "mouse") return;
+    const card = e.currentTarget as HTMLElement;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const rotateX = ((y - rect.height / 2) / (rect.height / 2)) * -ROTATION_FACTOR;
+    const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * ROTATION_FACTOR;
+    card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.03)`;
+    card.style.setProperty("--tilt-x", `${(x / rect.width) * 100}%`);
+    card.style.setProperty("--tilt-y", `${(y / rect.height) * 100}%`);
+  }
+
+  function handleLeave(e: PointerEvent) {
+    (e.currentTarget as HTMLElement).style.transform = "";
+  }
+
+  // Touch devices don't reliably produce :hover (and never produce the
+  // pointermove-driven tilt/glow above), so the fill and its text-color
+  // swap are driven off this explicit class instead, toggled by tapping.
+  function handleTouchTap(e: PointerEvent) {
+    if (e.pointerType === "mouse") return;
+    const card = (e.target as HTMLElement)?.closest<HTMLElement>(".tilt-card");
+    document.querySelectorAll<HTMLElement>(".tilt-card.is-touched").forEach((el) => {
+      if (el !== card) el.classList.remove("is-touched");
+    });
+    if (!card) return;
+    if (card.classList.contains("is-touched")) {
+      card.classList.remove("is-touched");
+      return;
+    }
+    if (!prefersReducedMotion) {
+      const rect = card.getBoundingClientRect();
+      card.style.setProperty("--tilt-x", `${((e.clientX - rect.left) / rect.width) * 100}%`);
+      card.style.setProperty("--tilt-y", `${((e.clientY - rect.top) / rect.height) * 100}%`);
+    }
+    card.classList.add("is-touched");
+  }
+
+  function init() {
+    document.querySelectorAll<HTMLElement>("[data-tilt]").forEach((card) => {
+      if (card.dataset.tiltBound) return;
+      card.dataset.tiltBound = "true";
+      card.addEventListener("pointermove", handleMove);
+      card.addEventListener("pointerleave", handleLeave);
+    });
+    if (!document.body.dataset.tiltTapBound) {
+      document.body.dataset.tiltTapBound = "true";
+      document.addEventListener("pointerdown", handleTouchTap, { passive: true });
+    }
+  }
+
+  init();
+  document.addEventListener("astro:page-load", init);
+</script>

@@ -1,0 +1,30 @@
+{
+  "name": "sun-industries",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "cross-env NAPI_RS_FORCE_WASI=true astro dev",
+    "build": "cross-env NAPI_RS_FORCE_WASI=true astro build",
+    "preview": "cross-env NAPI_RS_FORCE_WASI=true astro preview",
+    "astro": "astro",
+    "postinstall": "npm install @bruits/satteri-wasm32-wasi@0.10.5 --no-save --force"
+  },
+  "dependencies": {
+    "@lucide/astro": "^1.41.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.3.1",
+    "lenis": "^1.3.26",
+    "tailwindcss": "^4.3.3"
+  },
+  "allowScripts": {
+    "esbuild": true
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "cross-env": "^10.1.0",
+    "typescript": "^6.0.3"
+  }
+}
