@@ -87,8 +87,8 @@ const config = {
   }
 
   .particle-text__glow {
-    filter: blur(6px);
-    opacity: 0.8;
+    filter: blur(4px);
+    opacity: 0.4;
   }
 
   .particle-text__sr {
@@ -275,7 +275,7 @@ const config = {
         drawParticle(ctx, particle, 1);
         if (drawGlow) {
           glowCtx.globalAlpha = alpha;
-          drawParticle(glowCtx, particle, 2.2);
+          drawParticle(glowCtx, particle, 1.6);
         }
       });
 

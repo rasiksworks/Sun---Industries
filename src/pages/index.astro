@@ -1,6 +1,7 @@
 ---
 import type { ImageMetadata } from "astro";
 import { getEntry } from "astro:content";
+import { Image } from "astro:assets";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Hero from "../components/sections/Hero.astro";
 import RateStrip from "../components/ui/RateStrip.astro";
@@ -64,7 +65,14 @@ const workStripImages = [
   description="Sun Industries: uPVC windows and doors, steel fabrication, pipe clamps, and laser cutting in Nagercoil."
 >
   <!-- SECTION: Landing fold (Hero + rate strip only, everything else starts below it) -->
-  <div class="flex min-h-[calc(100vh-61px)] flex-col justify-end">
+  <div class="relative isolate flex min-h-[calc(100vh-61px)] flex-col overflow-hidden" data-hero-zoom>
+    <Image
+      src={getGalleryImage("Hero Image.png")}
+      alt=""
+      class="absolute inset-0 -z-20 h-full w-full origin-center object-cover will-change-transform"
+      widths={[640, 1024, 1600, 2000]}
+      sizes="100vw"
+    />
     <Hero
       variant="full"
       title="Windows and doors for Nagercoil, with 20 years behind them"
@@ -85,6 +93,41 @@ const workStripImages = [
       />
     </div>
   </div>
+
+  <script>
+    function initHeroZoom() {
+      const container = document.querySelector<HTMLElement>("[data-hero-zoom]");
+      const img = container?.querySelector<HTMLElement>("img");
+      if (!container || !img) return;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+      const maxScale = 1.15;
+      let ticking = false;
+
+      function update() {
+        const rect = container!.getBoundingClientRect();
+        const progress = Math.min(1, Math.max(0, -rect.top / rect.height));
+        img!.style.transform = `scale(${1 + progress * (maxScale - 1)})`;
+        ticking = false;
+      }
+
+      function onScroll() {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+
+      update();
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onScroll);
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initHeroZoom);
+    } else {
+      initHeroZoom();
+    }
+  </script>
 
   <!-- SECTION: Three doors -->
   <section class="px-4 md:px-11 lg:px-20 py-8">
