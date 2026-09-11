@@ -36,12 +36,12 @@ const titleLine2 = titleCommaIndex !== -1 ? title.slice(titleCommaIndex + 1).tri
         {eyebrow && (
           <p class="text-sm font-semibold uppercase tracking-wide text-sun-text">{eyebrow}</p>
         )}
-        <h1
-          class="text-4xl font-bold leading-[1.05] text-ink sm:whitespace-nowrap sm:[font-size:clamp(1.75rem,4.8vw,4.5rem)]"
-          data-stx-skip
-        >
-          <span class="block text-left">{titleLine1}</span>
-          {titleLine2 && <span class="block text-left sm:text-right">{titleLine2}</span>}
+        <h1 class="font-bold leading-[1.05] text-ink" data-stx-skip>
+          <span class="block text-left [font-size:clamp(2.25rem,9vw,3rem)] sm:hidden">{title}</span>
+          <span class="hidden sm:block sm:whitespace-nowrap sm:[font-size:clamp(1.75rem,4.8vw,4.5rem)]">
+            <span class="block text-left">{titleLine1}</span>
+            {titleLine2 && <span class="block text-left sm:text-right">{titleLine2}</span>}
+          </span>
         </h1>
       </div>
       <div class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">

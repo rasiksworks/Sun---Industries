@@ -11,10 +11,51 @@ import StatCard from "../components/ui/StatCard.astro";
 import WorkStrip from "../components/sections/WorkStrip.astro";
 import HowItWorksSteps from "../components/sections/HowItWorksSteps.astro";
 import GalleryGrid from "../components/sections/GalleryGrid.astro";
-import WorkshopStats from "../components/sections/WorkshopStats.astro";
 import PillBadge from "../components/ui/PillBadge.astro";
 import Button from "../components/ui/Button.astro";
 import ReviewBadge from "../components/ui/ReviewBadge.astro";
+import TestimonialCard from "../components/ui/TestimonialCard.astro";
+
+// DEMO PLACEHOLDER testimonials for today's client demo. Not real customer
+// quotes, swap for actual reviews before this site goes live.
+const demoTestimonials = [
+  {
+    quote:
+      "They explained exactly what steel and gasket they were using before we paid anything. No surprises, the frame arrived exactly as quoted.",
+    name: "Ravi K.",
+    location: "Nagercoil",
+  },
+  {
+    quote: "Fast installation and the windows have held up well through two monsoons.",
+    name: "Meena S.",
+    location: "Kanyakumari",
+  },
+  {
+    quote: "Ordered clamps in bulk for our workshop, good quality and fair pricing.",
+    name: "Suresh P.",
+    location: "Nagercoil",
+  },
+  {
+    quote: "Needed grills for our balcony on short notice, they fit perfectly the first time.",
+    name: "Lakshmi N.",
+    location: "Nagercoil",
+  },
+  {
+    quote: "Sent a drawing for a laser-cut bracket and got it back cut to spec within the week.",
+    name: "Anand V.",
+    location: "Kanyakumari",
+  },
+  {
+    quote: "Straightforward pricing, no pressure to upgrade to something we didn't need.",
+    name: "Devi R.",
+    location: "Nagercoil",
+  },
+  {
+    quote: "Replaced every window in the house over two weekends, minimal mess left behind.",
+    name: "Joseph M.",
+    location: "Nagercoil",
+  },
+];
 
 const business = await getEntry("business", "business");
 const upvc = await getEntry("specsUpvc", "upvc");
@@ -196,9 +237,6 @@ const workStripImages = [
     </div>
   </section>
 
-  <!-- SECTION: Workshop stats -->
-  <WorkshopStats />
-
   <!-- SECTION: Reviews -->
   <section class="px-4 md:px-11 lg:px-20 py-16 text-center">
     <PillBadge label="Review" />
@@ -206,9 +244,69 @@ const workStripImages = [
       What our clients are saying about us
     </h2>
     <div class="mt-10 flex justify-center">
-      <ReviewBadge rating={googleRating} reviewCount={googleReviewCount} />
+      <ReviewBadge rating={googleRating} reviewCount={googleReviewCount} showGoogleLink={false} />
+    </div>
+    <div
+      data-testimonial-scroll
+      class="-mx-4 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-[calc(50vw-9rem)] pb-4 text-left [scrollbar-width:none] md:-mx-11 lg:-mx-20 [&::-webkit-scrollbar]:hidden"
+    >
+      {
+        demoTestimonials.map((testimonial) => (
+          <div class="w-72 shrink-0 snap-center transition-[filter] duration-200 ease-out" data-testimonial-item>
+            <TestimonialCard
+              quote={testimonial.quote}
+              name={testimonial.name}
+              location={testimonial.location}
+            />
+          </div>
+        ))
+      }
     </div>
   </section>
+
+  <script>
+    function initTestimonialScroll() {
+      const container = document.querySelector<HTMLElement>("[data-testimonial-scroll]");
+      if (!container) return;
+      const items = Array.from(container.querySelectorAll<HTMLElement>("[data-testimonial-item]"));
+
+      const target = items[3];
+      if (target) {
+        container.scrollLeft = target.offsetLeft - container.clientWidth / 2 + target.clientWidth / 2;
+      }
+
+      const maxBlurPx = 2.5;
+      let ticking = false;
+
+      function updateBlur() {
+        const containerCenter = container!.getBoundingClientRect().left + container!.clientWidth / 2;
+        const halfWidth = container!.clientWidth / 2;
+        items.forEach((item) => {
+          const rect = item.getBoundingClientRect();
+          const itemCenter = rect.left + rect.width / 2;
+          const distance = Math.min(1, Math.abs(itemCenter - containerCenter) / halfWidth);
+          item.style.filter = distance > 0.05 ? `blur(${(distance * maxBlurPx).toFixed(2)}px)` : "none";
+        });
+        ticking = false;
+      }
+
+      function onScroll() {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(updateBlur);
+      }
+
+      updateBlur();
+      container.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onScroll);
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initTestimonialScroll);
+    } else {
+      initTestimonialScroll();
+    }
+  </script>
 
   <!-- SECTION: Service area -->
   <section class="px-4 md:px-11 lg:px-20 py-8">

@@ -7,6 +7,7 @@
   --color-ink-darker: #040f11;
   --color-ink-darkest: #020808;
   --color-surface: #ffffff;
+  --color-page: #f4f4f4;
   --color-haze: #e6ebea;
   --color-muted: #5a6e71;
   --color-sun: #fec428;
@@ -37,9 +38,33 @@
 }
 
 body {
-  background-color: var(--color-surface);
+  background-color: var(--color-page);
   color: var(--color-ink);
   font-family: var(--font-sans);
+}
+
+/* Small, clean scrollbar matching the brand palette, no rounded corners. */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-ink) var(--color-haze);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-haze);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-ink);
+  border: 2px solid var(--color-haze);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-ink-dark);
 }
 
 /* Radial reveal button: a filled circle expands from the pointer position

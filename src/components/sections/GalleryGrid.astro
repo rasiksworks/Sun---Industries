@@ -14,9 +14,33 @@ const galleryImages = import.meta.glob<{ default: ImageMetadata }>(
   { eager: true },
 );
 
-const entries = Object.entries(galleryImages)
+const sorted = Object.entries(galleryImages)
   .map(([path, mod]) => ({ path, image: mod.default }))
   .sort((a, b) => a.path.localeCompare(b.path));
+
+// "Recent work 1" and "Recent work 2" are pinned to the first two column-1
+// slots (grid positions 0 and 3, the 3:4 aspect column), everything else
+// keeps its existing alphabetical order in the remaining slots.
+const pinnedNames = ["Recent work 1", "Recent work 2"];
+const pinnedTargetIndices = [0, 3];
+
+const pinned: (typeof sorted)[number][] = [];
+const rest: (typeof sorted)[number][] = [];
+sorted.forEach((entry) => {
+  const filename = entry.path.split("/").pop() ?? "";
+  const pinnedIndex = pinnedNames.findIndex((name) => filename.startsWith(name));
+  if (pinnedIndex !== -1) pinned[pinnedIndex] = entry;
+  else rest.push(entry);
+});
+
+const entries: (typeof sorted)[number][] = new Array(sorted.length);
+pinnedTargetIndices.forEach((targetIndex, i) => {
+  if (pinned[i]) entries[targetIndex] = pinned[i];
+});
+let restCursor = 0;
+for (let i = 0; i < entries.length; i++) {
+  if (!entries[i]) entries[i] = rest[restCursor++];
+}
 
 const files = limit ? entries.slice(0, limit) : entries;
 ---

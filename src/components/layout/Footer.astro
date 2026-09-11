@@ -29,15 +29,20 @@ const companyLinks = [
 ];
 ---
 
-<footer class="bg-ink text-surface">
-  <div class="border-b border-surface/10 px-4 py-6 text-center sm:py-28 md:px-11 lg:px-20">
-    <h2 class="mx-auto max-w-3xl text-xl leading-[1.25] tracking-tight sm:text-5xl lg:text-6xl">
-      Built in Nagercoil, trusted for {yearsServing}+ years.
+<footer class="bg-[#1c1c1c] text-surface">
+  <div class="border-b border-surface/10 bg-ink px-4 py-6 text-center sm:py-28 md:px-11 lg:px-20">
+    <h2 class="mx-auto max-w-3xl text-3xl leading-[1.25] tracking-tight sm:text-5xl lg:text-6xl">
+      <span class="font-normal text-surface/40">Built in</span>{" "}
+      <span class="font-bold text-surface">Nagercoil,</span>{" "}
+      <span class="font-bold text-sun">trusted for</span>{" "}
+      <span class="font-bold text-surface">{yearsServing}+</span>{" "}
+      <span class="font-normal text-surface/40">years.</span>
     </h2>
     <Button href="/get-a-quote" class="mt-4 text-sm uppercase tracking-wide sm:mt-10">Get a free quote</Button>
   </div>
 
-  <div class="grid grid-cols-2 gap-x-6 gap-y-4 px-4 py-5 sm:gap-10 sm:py-14 md:gap-8 md:px-11 lg:grid-cols-[1.2fr_1fr_1fr_1.4fr] lg:px-20">
+  <div class="flex min-h-screen flex-col justify-around">
+  <div class="grid grid-cols-2 gap-x-6 gap-y-6 px-4 py-8 sm:gap-10 sm:py-14 md:gap-8 md:px-11 lg:grid-cols-[1.2fr_1fr_1fr_1.4fr] lg:px-20">
     <div class="col-span-2 lg:col-span-1">
       <p class="flex items-center gap-2 text-lg font-bold tracking-tight text-surface">
         <Image src={logoIcon} alt="" class="h-7 w-auto" />
@@ -102,7 +107,7 @@ const companyLinks = [
     </div>
   </div>
 
-  <div class="border-t border-surface/10 px-2 py-10">
+  <div class="flex items-center border-t border-surface/10 px-2 py-10 sm:py-14">
     <ParticleText
       text="Sun Industries"
       particleSize={2}
@@ -126,5 +131,6 @@ const companyLinks = [
 
   <div class="border-t border-surface/10 px-4 py-2 text-xs text-surface/50 sm:py-4 md:px-11 lg:px-20">
     &copy; {new Date().getFullYear()} Sun Industries. All rights reserved.
+  </div>
   </div>
 </footer>

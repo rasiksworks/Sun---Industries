@@ -1,6 +1,22 @@
 # Sun Industries, Project Status
 
-Last updated: 2026-09-10 (Closing section simplified)
+Last updated: 2026-09-11 (Homepage testimonials, demo placeholder)
+
+## Homepage testimonials, DEMO PLACEHOLDER, must replace before launch
+
+Added three testimonial cards to the homepage "What our clients are saying
+about us" section (`src/pages/index.astro`, `TestimonialCard.astro`), added
+at the user's explicit request for a same-day client demo.
+
+**These are not real customer reviews.** The names (Ravi K., Meena S.,
+Suresh P.), locations, and quotes are all invented placeholder content,
+which breaks this project's normal content-fidelity rule (see "Content
+rule" below) as a deliberate, explicit exception for the demo. Before this
+site goes live, either:
+- Replace `demoTestimonials` in `src/pages/index.astro` with real client
+  quotes (name, location, and permission to publish), or
+- Remove the testimonial cards and keep only the real aggregate Google
+  rating (already wired to real data via `ReviewBadge`).
 
 ## Closing section simplified, removed duplicate stats
 

@@ -4,10 +4,11 @@ import OwnerSlot from "./OwnerSlot.astro";
 interface Props {
   rating: number;
   reviewCount: number;
+  showGoogleLink?: boolean;
   class?: string;
 }
 
-const { rating, reviewCount, class: className = "" } = Astro.props as Props;
+const { rating, reviewCount, showGoogleLink = true, class: className = "" } = Astro.props as Props;
 ---
 
 <div class:list={["flex flex-wrap items-center gap-3", className]}>
@@ -15,5 +16,5 @@ const { rating, reviewCount, class: className = "" } = Astro.props as Props;
     {rating.toFixed(1)}<span class="text-sun-text" aria-hidden="true">★</span>
     <span class="font-normal text-muted">· {reviewCount} reviews on Google</span>
   </span>
-  <OwnerSlot label="Google listing link" class="min-h-0 px-3 py-1 text-xs" />
+  {showGoogleLink && <OwnerSlot label="Google listing link" class="min-h-0 px-3 py-1 text-xs" />}
 </div>

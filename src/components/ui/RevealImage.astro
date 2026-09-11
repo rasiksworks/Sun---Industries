@@ -46,7 +46,7 @@ const {
      wrapper scrolls into view. One-shot: once revealed, it stays. */
   .reveal-image {
     clip-path: inset(0 0 100% 0);
-    transition: clip-path 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: clip-path 0.5s cubic-bezier(0.22, 1, 0.36, 1);
   }
   .reveal-wrap.reveal-active .reveal-image {
     clip-path: inset(0 0 0% 0);
@@ -80,27 +80,42 @@ const {
       img.addEventListener("error", reveal, { once: true });
     }
 
+    // Two separate observers, deliberately not merged: preloading early
+    // avoids a blank-image flash, but the wipe-in should only play once the
+    // image is actually reaching the viewport, not ~40% of a screen early.
+
     // Fires ~40% of a screen height before the image actually enters the
-    // viewport: this both kicks off its fetch early (overriding native
-    // lazy-loading's own, more conservative distance) and gives it time to
-    // finish loading before the wipe-in reveal plays, so the reveal never
-    // runs over a still-blank image.
-    const observer = new IntersectionObserver(
+    // viewport, overriding native lazy-loading's own, more conservative
+    // distance, so the fetch is already done by the time it's reached.
+    const preloadObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
           const img = entry.target.querySelector("img");
           if (img) img.loading = "eager";
-          revealWhenReady(entry.target as HTMLElement);
-          observer.unobserve(entry.target);
+          preloadObserver.unobserve(entry.target);
         });
       },
       { threshold: 0, rootMargin: "300px 0px 300px 0px" },
     );
 
+    // Only plays the clip-path wipe once the image has actually entered
+    // the viewport, so it's always visible when the animation runs.
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          revealWhenReady(entry.target as HTMLElement);
+          revealObserver.unobserve(entry.target);
+        });
+      },
+      { threshold: 0 },
+    );
+
     items.forEach((el) => {
       el.setAttribute("data-reveal-bound", "true");
-      observer.observe(el);
+      preloadObserver.observe(el);
+      revealObserver.observe(el);
     });
   }
 
