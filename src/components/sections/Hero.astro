@@ -40,7 +40,7 @@ const titleLine2 = titleCommaIndex !== -1 ? title.slice(titleCommaIndex + 1).tri
         data-stx-skip
       >
         <span class="block text-left">{titleLine1}</span>
-        {titleLine2 && <span class="block text-right">{titleLine2}</span>}
+        {titleLine2 && <span class="block text-left sm:text-right">{titleLine2}</span>}
       </h1>
       <div class="mt-8 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
         {subtitle && <p class="max-w-md font-body text-base text-muted sm:text-lg">{subtitle}</p>}

@@ -5,6 +5,7 @@ import TelLink from "../ui/TelLink.astro";
 import WhatsAppButton from "../ui/WhatsAppButton.astro";
 import OwnerSlot from "../ui/OwnerSlot.astro";
 import Button from "../ui/Button.astro";
+import ParticleText from "../ui/ParticleText.astro";
 import logoIcon from "../../assets/Logos/logo-icon.svg";
 
 const business = await getEntry("business", "business");
@@ -99,6 +100,28 @@ const companyLinks = [
         Serving {serviceArea!.data.confirmedTowns.join(", ")}.
       </p>
     </div>
+  </div>
+
+  <div class="border-t border-surface/10 px-2 py-10">
+    <ParticleText
+      text="Sun Industries"
+      particleSize={2}
+      density={4}
+      color="#ffffff"
+      highlightColor="#fec428"
+      scatter={180}
+      gatherDuration={1600}
+      stagger={420}
+      pointerRepel={40}
+      repelRadius={120}
+      idleDrift={0.7}
+      trigger="mount"
+      fontSize={600}
+      fontWeight={800}
+      fontFamily="inherit"
+      glow
+      class="aspect-[6.5/1] w-full"
+    />
   </div>
 
   <div class="border-t border-surface/10 px-4 py-2 text-xs text-surface/50 sm:py-4 md:px-11 lg:px-20">
