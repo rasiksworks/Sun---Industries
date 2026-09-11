@@ -26,5 +26,9 @@
     "@astrojs/check": "^0.9.10",
     "cross-env": "^10.1.0",
     "typescript": "^6.0.3"
+  },
+  "optionalDependencies": {
+    "@astrojs/compiler-binding-wasm32-wasi": "^0.4.0",
+    "@napi-rs/wasm-runtime": "^1.2.4"
   }
 }

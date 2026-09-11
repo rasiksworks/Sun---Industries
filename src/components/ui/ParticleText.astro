@@ -60,6 +60,7 @@ const config = {
 ---
 
 <div class:list={["particle-text", className]} data-particle-text data-config={JSON.stringify(config)} aria-label={text}>
+  <canvas class="particle-text__glow" aria-hidden="true"></canvas>
   <canvas class="particle-text__canvas" aria-hidden="true"></canvas>
   <span class="particle-text__sr">{text}</span>
 </div>
@@ -76,12 +77,18 @@ const config = {
     isolation: isolate;
   }
 
-  .particle-text__canvas {
+  .particle-text__canvas,
+  .particle-text__glow {
     position: absolute;
     inset: 0;
     display: block;
     width: 100%;
     height: 100%;
+  }
+
+  .particle-text__glow {
+    filter: blur(6px);
+    opacity: 0.8;
   }
 
   .particle-text__sr {
@@ -145,9 +152,11 @@ const config = {
 
   function setupParticleText(root: HTMLElement) {
     const canvas = root.querySelector<HTMLCanvasElement>(".particle-text__canvas");
-    if (!canvas) return;
+    const glowCanvas = root.querySelector<HTMLCanvasElement>(".particle-text__glow");
+    if (!canvas || !glowCanvas) return;
     const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    const glowCtx = glowCanvas.getContext("2d");
+    if (!ctx || !glowCtx) return;
 
     const config = JSON.parse(root.dataset.config || "{}");
     const {
@@ -179,6 +188,9 @@ const config = {
     let width = 0;
     let height = 0;
     let dpr = 1;
+    let visible = false;
+    let pausedAt: number | null = null;
+    let hasAppeared = false;
 
     const pointer = { active: false, x: 0, y: 0, smoothX: 0, smoothY: 0 };
 
@@ -203,27 +215,22 @@ const config = {
       gathering = true;
     };
 
-    const drawParticle = (particle: any) => {
-      const size = particle.size;
-      ctx.fillStyle = particle.color;
+    const drawParticle = (targetCtx: CanvasRenderingContext2D, particle: any, sizeMultiplier: number) => {
+      const size = particle.size * sizeMultiplier;
+      targetCtx.fillStyle = particle.color;
       if (size <= 2.1) {
-        ctx.fillRect(particle.x - size / 2, particle.y - size / 2, size, size);
+        targetCtx.fillRect(particle.x - size / 2, particle.y - size / 2, size, size);
         return;
       }
-      ctx.beginPath();
-      ctx.arc(particle.x, particle.y, size / 2, 0, Math.PI * 2);
-      ctx.fill();
+      targetCtx.beginPath();
+      targetCtx.arc(particle.x, particle.y, size / 2, 0, Math.PI * 2);
+      targetCtx.fill();
     };
 
     const render = (now: number) => {
       ctx.clearRect(0, 0, width, height);
-
-      if (glow && !reducedMotion) {
-        ctx.shadowBlur = particleSize * 3;
-        ctx.shadowColor = highlightColor;
-      } else {
-        ctx.shadowBlur = 0;
-      }
+      const drawGlow = glow && !reducedMotion;
+      if (drawGlow) glowCtx.clearRect(0, 0, width, height);
 
       pointer.smoothX += (pointer.x - pointer.smoothX) * 0.18;
       pointer.smoothY += (pointer.y - pointer.smoothY) * 0.18;
@@ -263,12 +270,17 @@ const config = {
         particle.x += (baseX - particle.x) * follow;
         particle.y += (baseY - particle.y) * follow;
 
-        ctx.globalAlpha = clamp(0.35 + progress * 0.65, 0, 1);
-        drawParticle(particle);
+        const alpha = clamp(0.35 + progress * 0.65, 0, 1);
+        ctx.globalAlpha = alpha;
+        drawParticle(ctx, particle, 1);
+        if (drawGlow) {
+          glowCtx.globalAlpha = alpha;
+          drawParticle(glowCtx, particle, 2.2);
+        }
       });
 
       ctx.globalAlpha = 1;
-      ctx.shadowBlur = 0;
+      if (drawGlow) glowCtx.globalAlpha = 1;
 
       if (gathering && complete) gathering = false;
 
@@ -276,7 +288,23 @@ const config = {
     };
 
     const ensureRenderLoop = () => {
-      if (animationFrame === null) animationFrame = window.requestAnimationFrame(render);
+      if (animationFrame === null && visible) animationFrame = window.requestAnimationFrame(render);
+    };
+
+    const pauseRenderLoop = () => {
+      if (animationFrame !== null) {
+        window.cancelAnimationFrame(animationFrame);
+        animationFrame = null;
+        pausedAt = performance.now();
+      }
+    };
+
+    const resumeRenderLoop = () => {
+      if (pausedAt !== null && gathering) {
+        gatherStart += performance.now() - pausedAt;
+      }
+      pausedAt = null;
+      ensureRenderLoop();
     };
 
     const sampleText = async () => {
@@ -292,6 +320,9 @@ const config = {
       canvas.style.width = "100%";
       canvas.style.height = "100%";
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      glowCanvas.width = canvas.width;
+      glowCanvas.height = canvas.height;
+      glowCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       const computed = window.getComputedStyle(root);
       const resolvedFamily = fontFamily === "inherit" ? computed.fontFamily || "sans-serif" : fontFamily;
@@ -444,6 +475,27 @@ const config = {
 
     const resizeObserver = new ResizeObserver(queueSample);
     resizeObserver.observe(root);
+
+    const visibilityObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            visible = true;
+            if (!hasAppeared && particles.length && !reducedMotion) {
+              hasAppeared = true;
+              startGather(false);
+            }
+            resumeRenderLoop();
+          } else {
+            visible = false;
+            pauseRenderLoop();
+          }
+        });
+      },
+      { threshold: 0 },
+    );
+    visibilityObserver.observe(root);
+
     sampleText();
   }
 
