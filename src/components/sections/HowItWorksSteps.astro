@@ -52,14 +52,14 @@ const cards = [
         cards.map((card) => (
           <TiltCard>
             <card.icon
-              class="size-8 text-ink transition-colors duration-500 group-hover:text-surface group-[.is-touched]:text-surface"
+              class="size-8 text-ink group-hover:text-surface group-[.is-touched]:text-surface"
               stroke-width={1.5}
               aria-hidden="true"
             />
-            <h3 class="mt-5 font-display text-[1.09375rem] font-bold uppercase tracking-wide text-ink transition-colors duration-500 group-hover:text-surface group-[.is-touched]:text-surface">
+            <h3 class="mt-5 font-display text-[1.09375rem] font-bold uppercase tracking-wide text-ink group-hover:text-surface group-[.is-touched]:text-surface">
               {card.title}
             </h3>
-            <p class="mt-2 font-body text-sm font-medium text-muted transition-colors duration-500 group-hover:text-surface/80 group-[.is-touched]:text-surface/80">
+            <p class="mt-2 font-body text-sm font-medium text-muted group-hover:text-surface group-[.is-touched]:text-surface">
               {card.body}
             </p>
           </TiltCard>

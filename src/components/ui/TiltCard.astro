@@ -40,15 +40,18 @@ const { class: className = "" } = Astro.props as Props;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease-out;
-    background: radial-gradient(circle 220px at var(--tilt-x, 50%) var(--tilt-y, 50%), var(--color-sun) 0%, transparent 70%);
+    background: radial-gradient(circle 260px at var(--tilt-x, 50%) var(--tilt-y, 50%), var(--color-sun) 0%, transparent 70%);
   }
-  .tilt-card:hover .tilt-card-glow {
-    opacity: 0.12;
+  .tilt-card:hover .tilt-card-glow,
+  .tilt-card:focus-within .tilt-card-glow,
+  .tilt-card.is-touched .tilt-card-glow {
+    opacity: 0.28;
   }
   .tilt-card-fill {
     position: absolute;
     inset: 0;
     z-index: 0;
+    /* Same solid dark green as the footer, not a tint. */
     background: var(--color-ink);
     clip-path: circle(0% at var(--tilt-x, 50%) var(--tilt-y, 50%));
     transition: clip-path 0.5s cubic-bezier(0.22, 1, 0.36, 1);
@@ -96,9 +99,32 @@ const { class: className = "" } = Astro.props as Props;
   // Touch devices don't reliably produce :hover (and never produce the
   // pointermove-driven tilt/glow above), so the fill and its text-color
   // swap are driven off this explicit class instead, toggled by tapping.
-  function handleTouchTap(e: PointerEvent) {
+  // A plain "pointerdown" also fires the instant a scroll gesture starts,
+  // so every card a finger passes over while scrolling would get toggled.
+  // Track movement/time from pointerdown to pointerup and only treat it
+  // as a tap if the finger barely moved and lifted quickly.
+  const TAP_MAX_MOVE_PX = 10;
+  const TAP_MAX_DURATION_MS = 500;
+  let touchStart: { x: number; y: number; time: number; card: HTMLElement | null } | null = null;
+
+  function handleTouchStart(e: PointerEvent) {
     if (e.pointerType === "mouse") return;
-    const card = (e.target as HTMLElement)?.closest<HTMLElement>(".tilt-card");
+    touchStart = {
+      x: e.clientX,
+      y: e.clientY,
+      time: e.timeStamp,
+      card: (e.target as HTMLElement)?.closest<HTMLElement>(".tilt-card"),
+    };
+  }
+
+  function handleTouchEnd(e: PointerEvent) {
+    if (e.pointerType === "mouse" || !touchStart) return;
+    const { x, y, time, card } = touchStart;
+    touchStart = null;
+    const movedPx = Math.hypot(e.clientX - x, e.clientY - y);
+    const durationMs = e.timeStamp - time;
+    if (movedPx > TAP_MAX_MOVE_PX || durationMs > TAP_MAX_DURATION_MS) return; // scroll/drag, not a tap
+
     document.querySelectorAll<HTMLElement>(".tilt-card.is-touched").forEach((el) => {
       if (el !== card) el.classList.remove("is-touched");
     });
@@ -126,7 +152,8 @@ const { class: className = "" } = Astro.props as Props;
     });
     if (!document.body.dataset.tiltTapBound) {
       document.body.dataset.tiltTapBound = "true";
-      document.addEventListener("pointerdown", handleTouchTap, { passive: true });
+      document.addEventListener("pointerdown", handleTouchStart, { passive: true });
+      document.addEventListener("pointerup", handleTouchEnd, { passive: true });
     }
   }
 

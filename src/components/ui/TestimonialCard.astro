@@ -14,17 +14,17 @@ const { quote, name, location, class: className = "" } = Astro.props as Props;
 
 <TiltCard class:list={["h-full", className]}>
   <Quote
-    class="size-8 text-ink transition-colors duration-500 group-hover:text-surface group-[.is-touched]:text-surface"
+    class="size-8 text-ink group-hover:text-surface group-[.is-touched]:text-surface"
     stroke-width={1.5}
     aria-hidden="true"
   />
-  <p class="mt-5 font-body text-sm font-medium text-muted transition-colors duration-500 group-hover:text-surface/80 group-[.is-touched]:text-surface/80">
+  <p class="mt-5 font-body text-sm font-medium text-muted group-hover:text-surface group-[.is-touched]:text-surface">
     {quote}
   </p>
-  <p class="mt-5 font-display text-[1.09375rem] font-bold uppercase tracking-wide text-ink transition-colors duration-500 group-hover:text-surface group-[.is-touched]:text-surface">
+  <p class="mt-5 font-display text-[1.09375rem] font-bold uppercase tracking-wide text-ink group-hover:text-surface group-[.is-touched]:text-surface">
     {name}
   </p>
-  <p class="mt-1 font-body text-xs font-medium text-muted transition-colors duration-500 group-hover:text-surface/80 group-[.is-touched]:text-surface/80">
+  <p class="mt-1 font-body text-xs font-medium text-muted group-hover:text-surface group-[.is-touched]:text-surface">
     {location}
   </p>
 </TiltCard>
