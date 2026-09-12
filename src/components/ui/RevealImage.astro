@@ -100,22 +100,32 @@ const {
     );
 
     // Plays the clip-path wipe only once the image is fully inside the
-    // viewport (threshold 1), not as soon as its edge first appears, so
-    // the user is looking at the whole image before it starts revealing.
-    const revealObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          revealWhenReady(entry.target as HTMLElement);
-          revealObserver.unobserve(entry.target);
-        });
-      },
-      { threshold: 1 },
-    );
-
+    // viewport, not as soon as its edge first appears, so the user is
+    // looking at the whole image before it starts revealing. Threshold is
+    // computed per element: an image taller than the viewport can never
+    // reach 100% visibility, so its threshold is capped at "as much of it
+    // as can possibly fit", i.e. it fills the viewport top-to-bottom.
     items.forEach((el) => {
       el.setAttribute("data-reveal-bound", "true");
       preloadObserver.observe(el);
+
+      const elementHeight = el.getBoundingClientRect().height || 1;
+      // 0.9x safety margin: requiring the exact peak ratio for an
+      // oversized element only holds true for a single scroll pixel,
+      // easy to scroll straight past without the observer ever catching
+      // it (especially on a fast scroll, or a coarse intersection check).
+      const threshold = Math.min(1, (window.innerHeight / elementHeight) * 0.9);
+
+      const revealObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            revealWhenReady(entry.target as HTMLElement);
+            revealObserver.unobserve(entry.target);
+          });
+        },
+        { threshold },
+      );
       revealObserver.observe(el);
     });
   }
