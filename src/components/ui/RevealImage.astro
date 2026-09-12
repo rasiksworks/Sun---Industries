@@ -99,10 +99,9 @@ const {
       { threshold: 0, rootMargin: "300px 0px 300px 0px" },
     );
 
-    // Plays the clip-path wipe just before the image reaches the viewport
-    // (a small anticipation margin, much less than the preload one above),
-    // so the reveal is still in progress as the image scrolls into the
-    // user's main view rather than finishing at the very bottom edge.
+    // Plays the clip-path wipe only once the image is fully inside the
+    // viewport (threshold 1), not as soon as its edge first appears, so
+    // the user is looking at the whole image before it starts revealing.
     const revealObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -111,7 +110,7 @@ const {
           revealObserver.unobserve(entry.target);
         });
       },
-      { threshold: 0, rootMargin: "0px 0px 100px 0px" },
+      { threshold: 1 },
     );
 
     items.forEach((el) => {

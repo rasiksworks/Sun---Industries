@@ -1,6 +1,6 @@
 ---
 import type { ImageMetadata } from "astro";
-import RevealImage from "../ui/RevealImage.astro";
+import { Image } from "astro:assets";
 
 interface Image {
   src: ImageMetadata;
@@ -22,15 +22,17 @@ const loopImages = [...images, ...images];
   <div class="work-strip-track flex w-max items-start gap-4 px-4 md:px-11 lg:px-20">
     {
       loopImages.map((image, i) => (
-        <RevealImage
+        <Image
           src={image.src}
           alt={image.alt}
-          class:list={[
-            "w-56 shrink-0 sm:w-72",
-            i % 2 === 0 ? "aspect-square" : "aspect-[4/3]",
-          ]}
+          format="webp"
+          quality="mid"
           widths={[224, 288, 576]}
           sizes="(min-width: 640px) 288px, 224px"
+          class:list={[
+            "block w-56 shrink-0 object-cover sm:w-72",
+            i % 2 === 0 ? "aspect-square" : "aspect-[4/3]",
+          ]}
         />
       ))
     }

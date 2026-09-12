@@ -5,7 +5,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Hero from "../components/sections/Hero.astro";
 import SectionHeading from "../components/ui/SectionHeading.astro";
 import TiltCard from "../components/ui/TiltCard.astro";
-import clampPhoto from "../assets/gallery/Clamp 2.jpeg";
+import clampPhoto from "../assets/Product page/Clamp for whole sale only.png";
 
 const clamps = await getEntry("specsClamps", "clamps");
 const { types, knownDestinations } = clamps!.data;
@@ -22,7 +22,7 @@ const { types, knownDestinations } = clamps!.data;
     ctaLabel="Ask for a rate list"
     ctaHref="/get-a-quote"
     photoSrc={clampPhoto}
-    photoAlt="Pipe clamps in various sizes, Sun Industries workshop"
+    photoAlt="Pipe clamps in graduated sizes"
   />
 
   <section class="px-4 md:px-11 lg:px-20 py-12">
