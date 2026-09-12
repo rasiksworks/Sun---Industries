@@ -278,15 +278,38 @@ const workStripImages = [
       const maxBlurPx = 2.5;
       let ticking = false;
 
+      // On touch devices (no real :hover), the card nearest the carousel's
+      // center auto-activates the same dark-fill/light-text state a tap
+      // would, so scrolling alone brings each card to life, no tap needed.
+      // Devices with a real mouse keep using :hover instead.
+      const autoActivateOnCenter = !window.matchMedia("(hover: hover)").matches;
+      let activeCard: HTMLElement | null = null;
+
       function updateBlur() {
         const containerCenter = container!.getBoundingClientRect().left + container!.clientWidth / 2;
         const halfWidth = container!.clientWidth / 2;
+        let closestItem: HTMLElement | null = null;
+        let closestDistance = Infinity;
         items.forEach((item) => {
           const rect = item.getBoundingClientRect();
           const itemCenter = rect.left + rect.width / 2;
           const distance = Math.min(1, Math.abs(itemCenter - containerCenter) / halfWidth);
           item.style.filter = distance > 0.05 ? `blur(${(distance * maxBlurPx).toFixed(2)}px)` : "none";
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            closestItem = item;
+          }
         });
+
+        if (autoActivateOnCenter) {
+          const card = closestItem?.querySelector<HTMLElement>(".tilt-card") ?? null;
+          if (card !== activeCard) {
+            activeCard?.classList.remove("is-touched");
+            card?.classList.add("is-touched");
+            activeCard = card;
+          }
+        }
+
         ticking = false;
       }
 

@@ -1,22 +1,23 @@
 ---
 import { getEntry } from "astro:content";
 import {
-  LayoutGrid,
-  Layers,
-  ClipboardList,
   IndianRupee,
   Ruler,
   ShieldCheck,
   BadgeCheck,
   Clock,
+  Layers,
   MessageCircleQuestionMark,
   Check,
 } from "@lucide/astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Hero from "../components/sections/Hero.astro";
+import SectionHeading from "../components/ui/SectionHeading.astro";
+import TiltCard from "../components/ui/TiltCard.astro";
 import SpecTable from "../components/ui/SpecTable.astro";
 import Placeholder from "../components/ui/Placeholder.astro";
 import FaqAccordion from "../components/sections/FaqAccordion.astro";
+import doorPhoto from "../assets/gallery/door.jpeg";
 
 const upvc = await getEntry("specsUpvc", "upvc");
 const whyChooseUs = await getEntry("whyChooseUs", "why-choose-us");
@@ -41,51 +42,39 @@ const {
     eyebrow="uPVC Windows & Doors"
     title="uPVC windows & doors"
     subtitle={`₹${ratePerSqFt} per sq. ft., ${turnaroundDays}-day turnaround.`}
-    photoLabel="uPVC product photo"
+    photoSrc={doorPhoto}
+    photoAlt="uPVC door with decorative glass panel, Sun Industries showroom"
   />
 
   <section class="px-4 md:px-11 lg:px-20 py-12">
-    <div class="mb-6 flex items-center gap-3">
-      <span class="flex size-9 shrink-0 items-center justify-center rounded-md bg-haze/60 text-ink">
-        <LayoutGrid class="size-4" aria-hidden="true" />
-      </span>
-      <h2 class="text-2xl font-bold text-ink">Product types</h2>
-    </div>
-    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <SectionHeading pill="What we make" title="Product types" />
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {
         productTypes.map((type) => (
-          <div class="flex items-center gap-2.5 rounded-md border border-haze px-4 py-3 text-sm text-ink">
-            <Check class="size-4 shrink-0 text-sun-text" aria-hidden="true" />
-            {type}
-          </div>
+          <TiltCard>
+            <div class="flex items-center gap-2.5 text-sm font-medium text-sun-text transition-colors duration-500 sm:text-ink sm:group-hover:text-surface sm:group-[.is-touched]:text-surface">
+              <Check class="size-4 shrink-0 text-sun-text transition-colors duration-500 sm:group-hover:text-surface sm:group-[.is-touched]:text-surface" aria-hidden="true" />
+              {type}
+            </div>
+          </TiltCard>
         ))
       }
     </div>
   </section>
 
   <section class="bg-haze/30 px-4 md:px-11 lg:px-20 py-12">
-    <div class="mb-6 flex items-center gap-3">
-      <span class="flex size-9 shrink-0 items-center justify-center rounded-md bg-surface text-ink">
-        <Layers class="size-4" aria-hidden="true" />
-      </span>
-      <h2 class="text-2xl font-bold text-ink">Glass options</h2>
-    </div>
+    <SectionHeading pill="Choose your glass" title="Glass options" />
     <div class="flex flex-wrap gap-2">
       {
         glassOptions.map((option) => (
-          <span class="rounded-full border border-haze bg-surface px-3 py-1 text-sm text-ink">{option}</span>
+          <span class="border border-haze bg-surface px-3 py-1 text-sm text-ink">{option}</span>
         ))
       }
     </div>
   </section>
 
   <section class="px-4 md:px-11 lg:px-20 py-12">
-    <div class="mb-6 flex items-center gap-3">
-      <span class="flex size-9 shrink-0 items-center justify-center rounded-md bg-haze/60 text-ink">
-        <ClipboardList class="size-4" aria-hidden="true" />
-      </span>
-      <h2 class="text-2xl font-bold text-ink">Specifications</h2>
-    </div>
+    <SectionHeading pill="The details" title="Specifications" />
     <SpecTable
       rows={[
         { label: "Rate", value: `₹${ratePerSqFt} / sq ft`, status: "verified", icon: IndianRupee },
@@ -102,15 +91,15 @@ const {
     </p>
   </section>
 
-  <section class="bg-haze/30 px-4 md:px-11 lg:px-20 py-12">
-    <div class="flex gap-4 rounded-lg border border-haze bg-surface px-6 py-6">
-      <span class="flex size-9 shrink-0 items-center justify-center rounded-md bg-haze/60 text-ink">
+  <section class="px-4 md:px-11 lg:px-20 py-12">
+    <div class="flex gap-4 bg-ink px-6 py-8 text-surface md:px-10">
+      <span class="flex size-9 shrink-0 items-center justify-center bg-surface/10 text-sun">
         <MessageCircleQuestionMark class="size-4" aria-hidden="true" />
       </span>
       <div>
-        <p class="text-sm font-semibold uppercase tracking-wide text-muted">The #1 question we get on the phone</p>
-        <p class="mt-2 text-ink">{whyChooseUs!.data.topPhoneQuestion}</p>
-        <p class="mt-2 text-sm text-muted">
+        <p class="text-sm font-semibold uppercase tracking-wide text-surface/60">The #1 question we get on the phone</p>
+        <p class="mt-2 text-lg font-medium">{whyChooseUs!.data.topPhoneQuestion}</p>
+        <p class="mt-2 text-sm text-surface/70">
           That's why every spec on this page (profile, gasket, warranty, turnaround) is published up front.
         </p>
       </div>

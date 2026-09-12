@@ -1,8 +1,11 @@
 ---
 import { getEntry } from "astro:content";
-import { LayoutGrid, Check, Truck } from "@lucide/astro";
+import { Check, Truck } from "@lucide/astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Hero from "../components/sections/Hero.astro";
+import SectionHeading from "../components/ui/SectionHeading.astro";
+import TiltCard from "../components/ui/TiltCard.astro";
+import clampPhoto from "../assets/gallery/Clamp 2.jpeg";
 
 const clamps = await getEntry("specsClamps", "clamps");
 const { types, knownDestinations } = clamps!.data;
@@ -18,36 +21,34 @@ const { types, knownDestinations } = clamps!.data;
     subtitle="PVC, uPVC, and SWR pipe clamps, wholesale supply for plumbers, apartment builders, and contractors."
     ctaLabel="Ask for a rate list"
     ctaHref="/get-a-quote"
-    photoLabel="Clamps product photo"
+    photoSrc={clampPhoto}
+    photoAlt="Pipe clamps in various sizes, Sun Industries workshop"
   />
 
   <section class="px-4 md:px-11 lg:px-20 py-12">
-    <div class="mb-6 flex items-center gap-3">
-      <span class="flex size-9 shrink-0 items-center justify-center rounded-md bg-haze/60 text-ink">
-        <LayoutGrid class="size-4" aria-hidden="true" />
-      </span>
-      <h2 class="text-2xl font-bold text-ink">Clamp types</h2>
-    </div>
-    <div class="grid gap-3 sm:grid-cols-2">
+    <SectionHeading pill="What we supply" title="Clamp types" />
+    <div class="grid gap-4 sm:grid-cols-2">
       {
         types.map((type) => (
-          <div class="flex items-center gap-2.5 rounded-md border border-haze px-4 py-3 text-sm text-ink">
-            <Check class="size-4 shrink-0 text-sun-text" aria-hidden="true" />
-            {type}
-          </div>
+          <TiltCard>
+            <div class="flex items-center gap-2.5 text-sm font-medium text-sun-text transition-colors duration-500 sm:text-ink sm:group-hover:text-surface sm:group-[.is-touched]:text-surface">
+              <Check class="size-4 shrink-0 text-sun-text transition-colors duration-500 sm:group-hover:text-surface sm:group-[.is-touched]:text-surface" aria-hidden="true" />
+              {type}
+            </div>
+          </TiltCard>
         ))
       }
     </div>
   </section>
 
-  <section class="bg-haze/30 px-4 md:px-11 lg:px-20 py-12">
-    <div class="flex gap-4 rounded-lg border border-haze bg-surface px-6 py-6">
-      <span class="flex size-9 shrink-0 items-center justify-center rounded-md bg-haze/60 text-ink">
+  <section class="px-4 md:px-11 lg:px-20 pb-12">
+    <div class="flex gap-4 bg-ink px-6 py-8 text-surface md:px-10">
+      <span class="flex size-9 shrink-0 items-center justify-center bg-surface/10 text-sun">
         <Truck class="size-4" aria-hidden="true" />
       </span>
       <div>
-        <p class="text-sm font-semibold uppercase tracking-wide text-muted">Already shipping outside the district</p>
-        <p class="mt-2 text-ink">
+        <p class="text-sm font-semibold uppercase tracking-wide text-surface/60">Already shipping outside the district</p>
+        <p class="mt-2 text-lg font-medium">
           Regularly supplying wholesale orders to {knownDestinations.join(", ")}.
         </p>
       </div>

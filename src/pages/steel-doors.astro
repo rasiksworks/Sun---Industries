@@ -1,8 +1,8 @@
 ---
 import { getEntry } from "astro:content";
-import { LayoutGrid } from "@lucide/astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Hero from "../components/sections/Hero.astro";
+import SectionHeading from "../components/ui/SectionHeading.astro";
 import OwnerSlot from "../components/ui/OwnerSlot.astro";
 import Placeholder from "../components/ui/Placeholder.astro";
 
@@ -14,13 +14,8 @@ const { productRange } = steel!.data;
   <Hero eyebrow="Steel Doors & Windows" title="Steel doors & windows" photoLabel="Steel product photo" />
 
   <section class="px-4 md:px-11 lg:px-20 py-12">
-    <div class="mb-6 flex items-center gap-3">
-      <span class="flex size-9 shrink-0 items-center justify-center rounded-md bg-haze/60 text-ink">
-        <LayoutGrid class="size-4" aria-hidden="true" />
-      </span>
-      <h2 class="text-2xl font-bold text-ink">Product range</h2>
-    </div>
-    <p class="mb-4 text-sm text-muted">
+    <SectionHeading pill="What we make" title="Product range" />
+    <p class="mb-6 max-w-prose text-sm text-muted">
       <Placeholder value={productRange} label="Product range" />
     </p>
     <OwnerSlot label="Steel product details" class="min-h-40 w-full" />

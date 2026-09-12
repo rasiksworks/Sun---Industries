@@ -16,11 +16,19 @@ const { class: className = "" } = Astro.props as Props;
 
 <style>
   .tilt-card {
-    transform-style: preserve-3d;
-    will-change: transform;
     transition:
       transform 0.2s ease-out,
       box-shadow 0.2s ease-out;
+  }
+  /* transform-style/will-change are only added while a mouse is actively
+     tilting the card (see handleMove/handleLeave below), not left on
+     permanently: a persistent will-change promotes the card to its own
+     GPU layer, which on some mobile WebKit builds causes child text-color
+     changes (the is-touched swap) to update in the style system but not
+     repaint on screen. Touch interactions never need the 3D tilt at all. */
+  .tilt-card.tilt-hovering {
+    transform-style: preserve-3d;
+    will-change: transform;
   }
   .tilt-card:hover {
     box-shadow: 0 12px 24px -12px rgb(14 46 51 / 0.25);
@@ -68,6 +76,7 @@ const { class: className = "" } = Astro.props as Props;
   function handleMove(e: PointerEvent) {
     if (prefersReducedMotion || e.pointerType !== "mouse") return;
     const card = e.currentTarget as HTMLElement;
+    card.classList.add("tilt-hovering");
     const rect = card.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -79,7 +88,9 @@ const { class: className = "" } = Astro.props as Props;
   }
 
   function handleLeave(e: PointerEvent) {
-    (e.currentTarget as HTMLElement).style.transform = "";
+    const card = e.currentTarget as HTMLElement;
+    card.classList.remove("tilt-hovering");
+    card.style.transform = "";
   }
 
   // Touch devices don't reliably produce :hover (and never produce the
@@ -94,6 +105,7 @@ const { class: className = "" } = Astro.props as Props;
     if (!card) return;
     if (card.classList.contains("is-touched")) {
       card.classList.remove("is-touched");
+      void card.offsetHeight; // force a repaint; see note above about stuck compositing paints
       return;
     }
     if (!prefersReducedMotion) {
@@ -102,6 +114,7 @@ const { class: className = "" } = Astro.props as Props;
       card.style.setProperty("--tilt-y", `${((e.clientY - rect.top) / rect.height) * 100}%`);
     }
     card.classList.add("is-touched");
+    void card.offsetHeight;
   }
 
   function init() {

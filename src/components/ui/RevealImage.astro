@@ -46,7 +46,7 @@ const {
      wrapper scrolls into view. One-shot: once revealed, it stays. */
   .reveal-image {
     clip-path: inset(0 0 100% 0);
-    transition: clip-path 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: clip-path 0.7s cubic-bezier(0.22, 1, 0.36, 1);
   }
   .reveal-wrap.reveal-active .reveal-image {
     clip-path: inset(0 0 0% 0);
@@ -99,8 +99,10 @@ const {
       { threshold: 0, rootMargin: "300px 0px 300px 0px" },
     );
 
-    // Only plays the clip-path wipe once the image has actually entered
-    // the viewport, so it's always visible when the animation runs.
+    // Plays the clip-path wipe just before the image reaches the viewport
+    // (a small anticipation margin, much less than the preload one above),
+    // so the reveal is still in progress as the image scrolls into the
+    // user's main view rather than finishing at the very bottom edge.
     const revealObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -109,7 +111,7 @@ const {
           revealObserver.unobserve(entry.target);
         });
       },
-      { threshold: 0 },
+      { threshold: 0, rootMargin: "0px 0px 100px 0px" },
     );
 
     items.forEach((el) => {
